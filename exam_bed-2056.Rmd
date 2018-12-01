@@ -11,24 +11,18 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r init, echo = FALSE, message = FALSE, warning= FALSE}
+```{r DATAIMPORT, echo = FALSE, message = FALSE, warning= FALSE}
 library(tidyverse)
 library(leaflet)
 library(dplyr)
 library(readr)
 
-drugsidents <- read_csv("https://data.ct.gov/api/views/rybz-nyjw/rows.csv?accessType=DOWNLOAD", 
-                        col_types = cols(Date = col_date(format = "%m/%d/%Y")))
-
-head(drugsidents)
+drug_set <- read_delim("CDC.txt", "\t", escape_double = FALSE, 
+    trim_ws = TRUE)
 
 ```
 
-```{r DANIEL}
-fewger
 
-
-```
 
 
 
