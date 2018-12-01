@@ -1,9 +1,12 @@
 ---
 title: ''
-output: 
+output:
+  pdf_document: default
   html_document:
-        css: [ 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' ,'style.css']
-editor_options: 
+    css:
+    - style.css
+    - https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css
+editor_options:
   chunk_output_type: console
 ---
 
