@@ -1,0 +1,74 @@
+
+    
+    
+
+
+
+/* Flyer-Background Jumbotron */
+.jumbotron {
+    padding: 20% 100% 20% 100%;
+    background-image:url("jumbo.jpg");
+    background-size: cover;
+    
+}
+
+.jumbotron h1 {
+    color: white;
+}
+
+
+
+
+
+/* Introduction */
+#introduction{
+    margin-top:25%;
+}
+.container h2{
+    font-size: 60px;
+} 
+
+
+
+
+
+/* Numbers */
+
+#numbers{
+    margin-top: 20%
+}
+
+#numbers_container{
+    
+}
+
+
+
+
+
+
+
+
+/* Maps */
+#maps{
+    margin-top:20%;
+}
+
+
+
+
+
+/* Statbox */
+
+#stat{
+    margin-top:20%;
+}
+
+#stat_container{
+    
+    padding-top:5%;
+    background-color: rgba(170, 185, 185, 0.3);
+    
+}
+
+    

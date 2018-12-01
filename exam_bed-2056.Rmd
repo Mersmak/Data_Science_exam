@@ -1,0 +1,145 @@
+---
+title: ''
+output: 
+  html_document:
+        css: [ 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' ,'style.css']
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r init, echo = FALSE, message = FALSE, warning= FALSE}
+library(tidyverse)
+library(leaflet)
+library(dplyr)
+library(readr)
+
+drugsidents <- read_csv("https://data.ct.gov/api/views/rybz-nyjw/rows.csv?accessType=DOWNLOAD", 
+                        col_types = cols(Date = col_date(format = "%m/%d/%Y")))
+
+head(drugsidents)
+
+```
+
+
+
+
+
+
+<!--Jumbotron -->
+
+
+
+<div class="jumbotron jumbotron-fluid" id="background_div">
+<h1 class = "text-center" >Drug related deaths in Conneticut</h1>
+
+
+
+
+<!-- Introduction text -->
+<div class = "container" id  = "introduction">
+<hr style ="margin-bottom:10%;" />
+
+  <h2 class = "text-center"> Introduction </h2>
+  <p class = "text-center"> In this casestudy we're going to look at drug related death in Conneticut ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbusker og andre buskvekster  </p> 
+  
+<hr style = margin-top:10% />
+
+
+
+
+<!--Numbers -->
+<div id="numbers">   
+<div class="container-fluid" id="numbers_container">   
+
+<div class="card">
+<center>
+```{r echo = FALSE, message= FALSE}
+ggplot() +
+  geom_bar(data = drugsidents, aes (Race)) +
+  labs(
+        title = "Races",
+        y = "Count") +
+    theme_dark()
+```
+</center>
+
+<div class="card-body">
+<p class="card-text text-center">Drug related use up by going to look at drug related death in Conneticut ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbuske </p>
+</div>
+</div>
+
+
+
+
+</div>
+</div>
+
+
+
+<!--Maps -->
+<div class = "container" id  = "maps">
+  <h2 class = "text-center"> Map </h2>
+
+<center>
+```{r map, echo = FALSE, message= FALSE, fig.width=8}
+m <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+m
+```
+</center>
+
+
+
+
+
+<!--Statistics -->
+
+
+<div id ="stat">
+<h2 class = "text-center"> Statistics </h2>
+
+<div class="container-fluid" id="stat_container">   
+
+<div class="col-md-6" id = "graph1">
+```{r graph, echo = FALSE, message= FALSE}
+ggplot() +
+  geom_bar(data = drugsidents, aes (Race)) +
+  labs(
+        title = "Races",
+        y = "Count") 
+
+```
+</div>
+
+
+<div class="col-md-6" id = "textgraph">
+<p> ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbusker og andre buskvekster ipsoms lorums ripsbusker og andre buskvekster </p>
+</div>
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+
+
+
+
+
+
