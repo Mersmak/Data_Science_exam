@@ -24,6 +24,11 @@ head(drugsidents)
 
 ```
 
+```{r DANIEL}
+fewger
+
+
+```
 
 
 
