@@ -21,8 +21,8 @@ library(leaflet)
 library(dplyr)
 library(readr)
 
-drug_set <- read_delim("CDC.txt", "\t", escape_double = FALSE, 
-    trim_ws = TRUE)
+drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
+
 
 ```
 
