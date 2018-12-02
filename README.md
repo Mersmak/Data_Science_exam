@@ -14,7 +14,7 @@ Form a team and submit a project proposal due Monday September 17 at 16:00.
 Project review meetings/approval, week 38/39.
 Project presentation, Monday December 3 at HHT 02.217 12:15.
 R/RMarkdown and compiled code due Monday December 10 at 16:00.
-Project webpage and screencast due due Monday December 10 at 16:00.
+Project webpage and screencast due Monday December 10 at 16:00.
 
 
 ## RMarkdown and HTML Files
