@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r DATAIMPORT, echo = FALSE, message = FALSE, warning= FALSE}
+rm(list = ls())
 library(tidyverse)
 library(leaflet)
 library(dplyr)
