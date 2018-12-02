@@ -1,11 +1,11 @@
 ---
 title: ''
 output:
-  pdf_document: default
   html_document:
     css:
     - style.css
     - https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css
+  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
@@ -20,13 +20,162 @@ library(tidyverse)
 library(leaflet)
 library(dplyr)
 library(readr)
+library(jsonlite)
 
+# Data on Drug accidents in the US 2015-2018
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
 
+# Adding states names to dataset
 
-#Filtering out incomplete and technical errors
-drug_set <- drug_set %>%
-  filter(is.na(Footnote))
+drug_set <- drug_set %>% mutate(state = case_when(State == "AK" ~ "Alaska",
+                                                  State == "AL" ~ "Alabama",
+                                                  State == "AZ" ~ "Arizona",
+                                                  State == "AR" ~ "Arkansas",
+                                                  State == "CA" ~ "California",
+                                                  State == "CO" ~ "Colorado",
+                                                  State == "CT" ~ "Connecticut",
+                                                  State == "DC" ~ "District of Columbia",
+                                                  State == "DE" ~ "Delaware",
+                                                  State == "FL" ~ "Florida",
+                                                  State == "GA" ~ "Georgia",
+                                                  State == "HI" ~ "Hawaii",
+                                                  State == "ID" ~ "Idaho",
+                                                  State == "IL" ~ "Illinois",
+                                                  State == "IN" ~ "Indiana",
+                                                  State == "IA" ~ "Iowa",
+                                                  State == "KS" ~ "Kansas",
+                                                  State == "KY" ~ "Kentucky",
+                                                  State == "LA" ~ "Louisiana",
+                                                  State == "ME" ~ "Maine",
+                                                  State == "MD" ~ "Maryland",
+                                                  State == "MA" ~ "Massachusetts",
+                                                  State == "MI" ~ "Michigan",
+                                                  State == "MN" ~ "Minnesota",
+                                                  State == "MS" ~ "Mississippi",
+                                                  State == "MO" ~ "Missouri",
+                                                  State == "MT" ~ "Montana",
+                                                  State == "NE" ~ "Nebraska",
+                                                  State == "NV" ~ "Nevada",
+                                                  State == "NH" ~ "New Hampshire",
+                                                  State == "NJ" ~ "New Jersey",
+                                                  State == "NM" ~ "New Mexico",
+                                                  State == "NY" ~ "New York",
+                                                  State == "NC" ~ "North Carolina",
+                                                  State == "ND" ~ "North Dakota",
+                                                  State == "OH" ~ "Ohio",
+                                                  State == "OK" ~ "Oklahoma",
+                                                  State == "OR" ~ "Oregon",
+                                                  State == "PA" ~ "Pennsylvania",
+                                                  State == "RI" ~ "Rhode Island",
+                                                  State == "SC" ~ "South Carolina",
+                                                  State == "SD" ~ "South Dakota",
+                                                  State == "TN" ~ "Tennessee",
+                                                  State == "TX" ~ "Texas",
+                                                  State == "US" ~ "United States of America federal state",
+                                                  State == "UT" ~ "Utah",
+                                                  State == "VT" ~ "Vermont",
+                                                  State == "VA" ~ "Virginia", 
+                                                  State == "WA" ~ "Washington",
+                                                  State == "WV" ~ "West Virginia",
+                                                  State == "WI" ~ "Wisconsin",
+                                                  State == "WY" ~ "Wyoming",
+                                                  State == "YC" ~ "Yucatan(MEX)"))
+# Changing colnames 
+colnames(drug_set) <- c("State","State_abbreviations","Year", "Month", "Indicator", "Deaths", "Predicted_Value", "Percent_complete", "Percent_pending_investigation","Footnote","State_name")
+
+# Removing the first colum we have two of                                                                       
+drug_set$State <- NULL
+
+# Rearranging colums 
+drug_set <- drug_set[,c(10,1,2,3,4,5,6,7,8,9)]
+
+
+# drug_set$State <- ifelse(drug_set$State == "AK", "Alaska",
+#                   ifelse(drug_set$State == "AL", "Alabama",
+#                   ifelse(drug_set$State == "AZ", "Arizona",
+#                   ifelse(drug_set$State == "AR", "Arkansas",
+#                   ifelse(drug_set$State == "CA", "California",
+#                   ifelse(drug_set$State == "CO", "Colorado",
+#                   ifelse(drug_set$State == "CT", "Connecticut",
+#                   ifelse(drug_set$State == "DC", "District of Columbia",
+#                   ifelse(drug_set$State == "DE", "Delaware",
+#                   ifelse(drug_set$State == "FL", "Florida",
+#                   ifelse(drug_set$State == "GA", "Georgia",
+#                   ifelse(drug_set$State == "HI", "Hawaii",
+#                   ifelse(drug_set$State == "ID", "Idaho",
+#                   ifelse(drug_set$State == "IL", "Illinois",
+#                   ifelse(drug_set$State == "IN", "Indiana",
+#                   ifelse(drug_set$State == "IA", "Iowa",
+#                   ifelse(drug_set$State == "KS", "Kansas",
+#                   ifelse(drug_set$State == "KY", "Kentucky",
+#                   ifelse(drug_set$State == "LA", "Louisiana",
+#                   ifelse(drug_set$State == "ME", "Maine",
+#                   ifelse(drug_set$State == "MD", "Maryland",
+#                   ifelse(drug_set$State == "MA", "Massachusetts",
+#                   ifelse(drug_set$State == "MI", "Michigan",
+#                   ifelse(drug_set$State == "MN", "Minnesota",
+#                   ifelse(drug_set$State == "MS", "Mississippi",
+#                   ifelse(drug_set$State == "MO", "Missouri",
+#                   ifelse(drug_set$State == "MT", "Montana",
+#                   ifelse(drug_set$State == "NE", "Nebraska",
+#                   ifelse(drug_set$State == "NV", "Nevada",
+#                   ifelse(drug_set$State == "NH", "New Hampshire",
+#                   ifelse(drug_set$State == "NJ", "New Jersey",
+#                   ifelse(drug_set$State == "NM", "New Mexico",
+#                   ifelse(drug_set$State == "NY", "New York",
+#                   ifelse(drug_set$State == "NC", "North Carolina",
+#                   ifelse(drug_set$State == "ND", "North Dakota",
+#                   ifelse(drug_set$State == "OH", "Ohio",
+#                   ifelse(drug_set$State == "OK", "Oklahoma",
+#                   ifelse(drug_set$State == "OR", "Oregon",
+#                   ifelse(drug_set$State == "PA", "Pennsylvania",
+#                   ifelse(drug_set$State == "RI", "Rhode Island",
+#                   ifelse(drug_set$State == "SC", "South Carolina",
+#                   ifelse(drug_set$State == "SD", "South Dakota",
+#                   ifelse(drug_set$State == "TN", "Tennessee",
+#                   ifelse(drug_set$State == "TX", "Texas",
+#                   ifelse(drug_set$State == "US", "United States of America federal state",
+#                   ifelse(drug_set$State == "UT", "Utah",
+#                   ifelse(drug_set$State == "VT", "Vermont",
+#                   ifelse(drug_set$State == "VA", "Virginia",
+#                   ifelse(drug_set$State == "WA", "Washington",
+#                   ifelse(drug_set$State == "WV", "West Virginia",
+#                   ifelse(drug_set$State == "WI", "Wisconsin",
+#                   ifelse(drug_set$State == "WY", "Wyoming",
+#                   ifelse(drug_set$State == "YC", "Yucatan(MEX)", NA)))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+# Taking a look at the dataset after cleaning. 
+head(drug_set)
+
+# Examining the footnote colum
+unique(drug_set$Footnote)
+unique(drug_set$Year)
+
+# If the code below is runned the data for 2017 and 2018 are removed. This is because the investigation on cases not are 
+# juridicaly finished and solved and some cases are underreported due to incomplete data. We still want to use the data for 2017 and 2018.
+
+# drug_set <- drug_set %>%
+  # filter(is.na(Footnote))
+
+
+
+
+# Data on medianincome from api
+getdata <- fromJSON("https://api.datausa.io/api/?sort=desc&show=geo&required=income&sumlevel=state&year=all&where=geo%3A%5E04000US")
+
+#Getting data out of list
+income <- getdata[["data"]]
+
+#Labeling data 
+colnames(income)[1:3] <- c("year","state", "median_income")
+
+#Exporting data to a csv file to avoid problems with atomic vectors
+write.csv(income, file = "MyData.csv")
+
+#Importing the csv
+income <- read_csv("mydata.csv", col_types = cols(X1 = col_skip()))
+
+
 ```
 
 
@@ -64,12 +213,12 @@ drug_set <- drug_set %>%
 <div class="card">
 <center>
 ```{r echo = FALSE, message= FALSE}
-ggplot() +
-  geom_bar(data = drugsidents, aes (Race)) +
-  labs(
-        title = "Races",
-        y = "Count") +
-    theme_dark()
+# ggplot() +
+#   geom_bar(data = drugsidents, aes (Race)) +
+#   labs(
+#         title = "Races",
+#         y = "Count") +
+#     theme_dark()
 ```
 </center>
 
@@ -113,11 +262,11 @@ m
 
 <div class="col-md-6" id = "graph1">
 ```{r graph, echo = FALSE, message= FALSE}
-ggplot() +
-  geom_bar(data = drugsidents, aes (Race)) +
-  labs(
-        title = "Races",
-        y = "Count") 
+# ggplot() +
+#   geom_bar(data = drugsidents, aes (Race)) +
+#   labs(
+#         title = "Races",
+#         y = "Count") 
 
 ```
 </div>
