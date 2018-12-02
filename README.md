@@ -5,9 +5,7 @@ This is the final exam for Daniel Aspvik, Preben Aspvik and Ørjan Myrland in BE
 
 ## Project Team
 
-Daniel Aspvik
-Preben Aspvik
-Ørjan Myrland
+Daniel Aspvik, Preben Aspvik and Ørjan Myrland
 
 
 ## Milestones 
