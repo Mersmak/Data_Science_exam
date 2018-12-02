@@ -127,6 +127,11 @@ income <- read_csv("mydata.csv", col_types = cols(X1 = col_skip()))
 
 
 
+```{r}
+unique(drug_set$Indicator)
+
+
+```
 
 
 
