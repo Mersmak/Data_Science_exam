@@ -21,6 +21,8 @@ library(leaflet)
 library(dplyr)
 library(readr)
 library(jsonlite)
+library(rvest)
+library(magrittr)
 
 # Data on Drug accidents in the US 2015-2018
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
@@ -182,16 +184,12 @@ income <- income %>% mutate(state = case_when(
                                               state == "04000US55" ~ "Wisconsin",
                                               state == "04000US56" ~ "Wyoming",
                                               state == "04000US72" ~ "Puerto Rico"))
-
-
-
-
 ```
 
 
 
 ```{r}
-unique(drug_set$Indicator)
+#unique(drug_set$Indicator)
 
 
 ```
@@ -253,16 +251,115 @@ unique(drug_set$Indicator)
 <div class = "container" id  = "maps">
   <h2 class = "text-center"> Map </h2>
 
+
+```{r Data_setup_maps}
+# setting digits to 9 for precise latitude longitude data 
+options(digits=9)
+
+# setting what page to scrape HTML data from 
+page <- read_html("https://inkplant.com/code/state-latitudes-longitudes")
+
+# Naming the dataset and collecting the html node (data table) from our page as html text
+statesmap <- page%>% html_nodes("tr td") %>% html_text()
+
+# making it a dataframe of 1 colum and 156 observations 
+statesmap <- as.data.frame(statesmap)
+
+# dividing it to three colums spliting for three observations a time into one of the three colums 
+statesmap <- as.data.frame(split(statesmap, 1:3))
+
+# making every colum to a character colum so it is easy to work with 
+statesmap$statesmap <- as.character(statesmap$statesmap)
+statesmap$statesmap.1 <- as.character(statesmap$statesmap.1)
+statesmap$statesmap.2 <- as.character(statesmap$statesmap.2)
+
+# Using dplyr to convert it from 'data.frame' to ‘tbl_df’, ‘tbl’ and 'data.frame'
+statesmap <- tbl_df(statesmap)
+
+# making the first row the names of the variable then removing the row afterwards 
+colnames(statesmap) <- statesmap[1,]
+statesmap <- statesmap[-1, ,drop=FALSE]
+
+# making the longitude and latitude data numeric
+statesmap$Latitude <- as.numeric(statesmap$Latitude)
+statesmap$Longitude <- as.numeric(statesmap$Longitude)
+
+# for the leaflet function 
+lat <- as.numeric(statesmap$Latitude)
+long <- as.numeric(statesmap$Longitude)
+namestate <- statesmap$State
+
+# dataset is finished 
+knitr::kable(head(statesmap))
+
+```
+
+
 <center>
 ```{r map, echo = FALSE, message= FALSE, fig.width=8}
+
+# basic map
 m <- leaflet() %>%
-  addTiles() %>%  # Add default OpenStreetMap map tiles
-  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+  addTiles() %>%  
+  addMarkers(lng=c(long), lat=c(lat), 
+             popup = c(namestate))
 m
+
+# browseURL("https://wiki.earthdata.nasa.gov/display/GIBS/GIBS+API+for+Developers#GIBSAPIforDevelopers-TimeDimension")
+
+# trying some other apperances 
+m %>% addProviderTiles("MtbMap")
+m %>% addProviderTiles("HikeBike.HikeBike")
+
+# I can like this 
+m %>% addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+
+# With opacity 0.5
+leaflet() %>%
+    addTiles() %>%  
+    addMarkers(lng=c(long), lat=c(lat), 
+             popup = c(namestate)) %>% 
+    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+                        options = providerTileOptions(time = "2015-08-30", opacity = 0.5))
+
+# With opacity 1. now a satelitte image 
+leaflet() %>%
+    addTiles() %>%  
+    addMarkers(lng=c(long), lat=c(lat), 
+             popup = c(namestate)) %>% 
+    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+                        options = providerTileOptions(time = "2015-08-30", opacity = 1))
+
+# 1. december this year  
+leaflet() %>%
+    addTiles() %>%  
+    addMarkers(lng=c(long), lat=c(lat), 
+             popup = c(namestate)) %>% 
+    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+                        options = providerTileOptions(time = "2018-12-01", opacity = 0.7))
+
 ```
 </center>
 
 
+
+```{r}
+
+
+library(housingData)
+df1 <- geoCounty
+
+alabama <- filter(df1, rMapState=="alabama")
+mean(alabama$lon)
+mean(alabama$lat)
+
+
+
+m <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng=mean(alabama$lon), lat=mean(alabama$lat), popup="The birthplace of R")
+m
+```
 
 
 
