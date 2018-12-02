@@ -106,6 +106,12 @@ unique(drug_set$Year)
 
 
 
+
+
+
+```
+
+```{r dataimport_income}
 # Data on medianincome from api
 getdata <- fromJSON("https://api.datausa.io/api/?sort=desc&show=geo&required=income&sumlevel=state&year=all&where=geo%3A%5E04000US")
 
@@ -122,8 +128,65 @@ write.csv(income, file = "MyData.csv")
 income <- read_csv("mydata.csv", col_types = cols(X1 = col_skip()))
 
 
-```
+#Recoding variables
+income <- income %>% mutate(state = case_when(
+                                              state == "04000US01" ~ "Alabama",
+                                              state == "04000US02" ~ "Alaska",
+                                              state == "04000US04" ~ "Arizona",
+                                              state == "04000US05" ~ "Arkansas",
+                                              state == "04000US06" ~ "California",
+                                              state == "04000US08" ~ "Colorado",
+                                              state == "04000US09" ~ "Connecticut",
+                                              state == "04000US10" ~ "Delaware",
+                                              state == "04000US11" ~ "District of Columbia",
+                                              state == "04000US12" ~ "Florida",
+                                              state == "04000US13" ~ "Georgia",
+                                              state == "04000US15" ~ "Hawaii",
+                                              state == "04000US16" ~ "Idaho",
+                                              state == "04000US17" ~ "Illinois",
+                                              state == "04000US18" ~ "Indiana",
+                                              state == "04000US19" ~ "Iowa",
+                                              state == "04000US20" ~ "Kansas",
+                                              state == "04000US21" ~ "Kentucky",
+                                              state == "04000US22" ~ "Louisiana",
+                                              state == "04000US23" ~ "Maine",
+                                              state == "04000US24" ~ "Maryland",
+                                              state == "04000US25" ~ "Massachusetts",
+                                              state == "04000US26" ~ "Michigan",
+                                              state == "04000US27" ~ "Minnesota",
+                                              state == "04000US28" ~ "Mississippi",
+                                              state == "04000US29" ~ "Missouri",
+                                              state == "04000US30" ~ "Montana",
+                                              state == "04000US31" ~ "Nebraska",
+                                              state == "04000US32" ~ "Nevada",
+                                              state == "04000US33" ~ "New Hampshire",
+                                              state == "04000US34" ~ "New Jersey",
+                                              state == "04000US35" ~ "New Mexico",
+                                              state == "04000US36" ~ "New York",
+                                              state == "04000US37" ~ "North Carolina",
+                                              state == "04000US38" ~ "North Dakota",
+                                              state == "04000US39" ~ "North Ohio",
+                                              state == "04000US40" ~ "Oklahoma", 
+                                              state == "04000US41" ~ "Oregon", 
+                                              state == "04000US42" ~ "Pennsylvania",
+                                              state == "04000US44" ~ "Rhode Island",
+                                              state == "04000US45" ~ "South Carolina",
+                                              state == "04000US46" ~ "South Dakota",
+                                              state == "04000US47" ~ "Tennessee",
+                                              state == "04000US48" ~ "Texas",
+                                              state == "04000US49" ~ "Utah",
+                                              state == "04000US50" ~ "Vermont",
+                                              state == "04000US51" ~ "Virginia",
+                                              state == "04000US53" ~ "Washington",
+                                              state == "04000US54" ~ "West Virginia",
+                                              state == "04000US55" ~ "Wisconsin",
+                                              state == "04000US56" ~ "Wyoming",
+                                              state == "04000US72" ~ "Puerto Rico"))
 
+
+
+
+```
 
 
 
