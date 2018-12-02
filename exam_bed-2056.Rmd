@@ -23,6 +23,9 @@ library(readr)
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
 
 
+#Filtering out incomplete and technical errors
+drug_set <- drug_set %>%
+  filter(is.na(Footnote))
 ```
 
 
