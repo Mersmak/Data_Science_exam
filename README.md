@@ -1,6 +1,6 @@
 # Data Science Project Fall 2018
 
-This is the final exam for Daniel Aspvik, Preben Aspvik and Ørjan Myrland in BED-2056 at UIT. The course is an introduction course for data science and this project is the final and most important part of our portfolio. The goal of the project is to go through the complete data science process to answer questions we have established ourself. The project will be a project that works through the entire data science process, by acquiring and manipulating data, designing visualizations, statistical analysis, and communicate and present the results.
+This is the final exam for Daniel Aspvik, Preben Aspvik and Ørjan Myrland in BED-2056 at UIT. The course is an introduction course for data science and this project is the final and most important part of our portfolio. The goal of the project is to go through the complete data science process to answer questions we have established ourself. The project will be a project that works through the entire data science process, by acquiring and manipulating data, designing visualizations, statistical analysis, and communicating and presenting the results.
 
 
 ## Project Team
