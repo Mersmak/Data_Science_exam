@@ -194,7 +194,130 @@ income <- income %>% mutate(state = case_when(
 
 ```
 
+```{r Monthly}
 
+#Monthly average deaths for every year and drug in the dataset
+
+#All type of drug deaths in 2015
+NODOD_2015 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015')
+#All type of drug deaths in 2016
+NODOD_2016 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2016')
+#All type of drug deaths in 2017
+NODOD_2017 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2017')
+#All type of drug deaths in 2018
+NODOD_2018 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2018')
+
+
+
+#Average deaths related to all drugs by month for 2015
+avg_monthly_2015 <- aggregate(Deaths ~ Month, NODOD_2015, mean) 
+#Average deaths related to all drugs by month for 2016
+avg_monthly_2016 <- aggregate(Deaths ~ Month, NODOD_2016, mean)
+#Average deaths related to all drugs by month for 2017
+avg_monthly_2017 <- aggregate(Deaths ~ Month, NODOD_2017, mean)
+#Average deaths related to all drugs by month for 2018
+avg_monthly_2018 <- aggregate(Deaths ~ Month, NODOD_2018, mean)
+
+#Putting the months for 2015 in the right order
+avg_monthly_2015 <- avg_monthly_2015[c(5,4,8,1,9,7,6,2,12,11,10,3),]
+#Putting the months for 2016 in the right order
+avg_monthly_2016 <- avg_monthly_2016[c(5,4,8,1,9,7,6,2,12,11,10,3),]
+#Putting the months for 2017 in the right order
+avg_monthly_2017 <- avg_monthly_2017[c(5,4,8,1,9,7,6,2,12,11,10,3),]
+#Putting the months for 2018 in the right order (ONLY 4 MONTHS FOR THIS SET)
+avg_monthly_2018 <- avg_monthly_2018[c(3,2,4,1),]
+
+ggplot() +
+    geom_line(data = felles, aes(x = quote_date, y =close.x), colour = "red" ) +   #Equinor
+    geom_line(data = felles, aes(x = quote_date, y =close.y), colour = "blue") +    #Hydro
+    xlab("Date") + ylab("Closing price") #Bytter navn p?? x og y verdien
+
+ggplot() +
+    geom_line(data = avg_monthly_2015, aes(x = Month, y =Deaths,group = 1), colour = "red" ) +   #2015
+    geom_line(data = avg_monthly_2016, aes(x = Month, y =Deaths,group = 1), colour = "blue") +    #2016
+  geom_line(data = avg_monthly_2017, aes(x = Month, y =Deaths,group = 1), colour = "Orange") +  #2017
+    geom_line(data = avg_monthly_2018, aes(x = Month, y =Deaths,group = 1), colour = "green") +  #2018
+    xlab("Month") + ylab("Deaths") 
+
+
+ggplot() +
+  geom_bar(stat = "identity", data = avg_monthly_2015, aes (x = Month, y = Deaths),  colour="#0000FF", fill="#0000FF") +
+  #theme_classic() + 
+  #scale_x_discrete(expand=c(0,0)) +
+  #scale_y_continuous(expand=c(0,0)) +
+  #scale_x_continuous(breaks = avg_monthly_2015$Month) +
+  labs(
+        title = "Deaths related to all drugs by month in 2015",
+        x = "Month",
+        y = "Deaths")
+
+ggplot() +
+  geom_bar(stat = "identity", data = avg_monthly_2015, aes (x = Month, y = Deaths),  colour="#0000FF", fill="#0000FF") +
+  #theme_classic() + 
+  #scale_x_discrete(expand=c(0,0)) +
+  #scale_y_continuous(expand=c(0,0)) +
+  #scale_x_continuous(breaks = avg_monthly_2015$Month) +
+  labs(
+        title = "Deaths related to all drugs by month in 2015",
+        x = "Month",
+        y = "Deaths")
+
+ggplot() +
+  geom_bar(stat = "identity", data = avg_monthly_2016, aes (x = Month, y = Deaths),  colour="#0000FF", fill="#0000FF") +
+  #theme_classic() + 
+  #scale_x_discrete(expand=c(0,0)) +
+  #scale_y_continuous(expand=c(0,0)) +
+  #scale_x_continuous(breaks = avg_monthly_2015$Month) +
+  labs(
+        title = "Deaths related to all drugs by month in 2015",
+        x = "Month",
+        y = "Deaths")
+
+# Simple Horizontal Bar Plot with Added Labels 
+
+
+
+unique(drug_set$State)
+unique(drug_set$Indicator)
+
+```
+
+
+```{r Graph_median_income}
+
+#Scatter plot for median income
+ggplot(data = income, aes(x=median_income, y=state, colour = state)) +
+  geom_jitter() +
+  labs(
+        title = "Scatter plot of median income",
+        x = "Median income",
+        y = "State") 
+) #Ignore error
+
+```
+
+```{r death_by_drug_graph}
+
+#Sorting out by the type of drugs
+just_drugs <- drug_set %>%
+  filter(
+    Indicator != "Number of Deaths"  & 
+    Indicator != "Number of Drug Overdose Deaths"  &
+    Indicator != "Percent with drugs specified" 
+
+)
+
+
+
+ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
+    coord_flip() +
+    theme_minimal()+
+    geom_bar(stat="identity") +
+    labs(
+        title = "Most lethal drug",
+        x = "Deaths",
+        y = "Drug") 
+```
 
 <!--Jumbotron -->
 
@@ -273,7 +396,7 @@ statesmap$statesmap <- as.character(statesmap$statesmap)
 statesmap$statesmap.1 <- as.character(statesmap$statesmap.1)
 statesmap$statesmap.2 <- as.character(statesmap$statesmap.2)
 
-# Using dplyr to convert it from 'data.frame' to ‘tbl_df’, ‘tbl’ and 'data.frame'
+# Using dplyr to convert it from 'data.frame' to ???tbl_df???, ???tbl??? and 'data.frame'
 statesmap <- tbl_df(statesmap)
 
 # making the first row the names of the variable then removing the row afterwards 
