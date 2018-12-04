@@ -14,7 +14,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r DATAIMPORT, echo = FALSE, message = FALSE, warning= FALSE}
+```{r Data_import_main, echo = FALSE, message = FALSE, warning= FALSE}
 rm(list = ls())
 library(tidyverse)
 library(leaflet)
@@ -23,6 +23,8 @@ library(readr)
 library(jsonlite)
 library(rvest)
 library(magrittr)
+library(rvest)
+library(htmltab)
 
 # Data on Drug accidents in the US 2015-2018
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
@@ -93,7 +95,7 @@ drug_set <- drug_set[,c(10,1,2,3,4,5,6,7,8,9)]
 
 
 # Taking a look at the dataset after cleaning. 
-head(drug_set)
+knitr::kable(head(drug_set))
 
 # Examining the footnote colum
 unique(drug_set$Footnote)
@@ -109,11 +111,383 @@ unique(drug_set$Year)
 
 
 
-
+##################################
 
 ```
 
-```{r dataimport_income}
+
+```{r Data_import_population}
+
+############################
+# We need population data for all the years so we can compare the different states by how many people actualy living in them.
+# Without this comparison it would mean nothing that there is more deaths in California than in Wyoming since it lives 
+# a lot more people in california compared to Wyoming. 
+
+
+# population pr state 2015
+# we are using the rvest package to scrape the following website with the data for 2015.
+page <- read_html("https://www.infoplease.com/us/states/state-population-rank-2015")
+
+# the table are in the node "tr td"
+pop2015 <- page%>% html_nodes("tr td") %>% html_text()
+
+# making the node as a one colum dataframe for easier manipulation 
+pop2015 <- as.data.frame(pop2015)
+
+# splitting the dataframe into two colums 
+pop2015 <- as.data.frame(split(pop2015, 1:2))
+
+# using dplyr to make it a tibble 
+pop2015 <- tbl_df(pop2015)
+
+# changing the names of the colums 
+names(pop2015)[1] <- "State"
+names(pop2015)[2] <- "Population2015"
+
+# Making everything as characters so we can use the function below
+pop2015$State <- as.character(pop2015$State)
+pop2015$Population2015 <- as.character(pop2015$Population2015)
+
+# taking the "," out of the tibble so we make the population data numeric 
+pop2015[] <- lapply(pop2015, function(x) as.character(gsub("[,]", "", x)))
+
+# making the data numeric 
+pop2015$Population2015 <- as.numeric(pop2015$Population2015)
+
+# arranging the states alfabeticaly 
+pop2015 <- pop2015[order(pop2015$State),]
+
+# removing row 45 containing the sum of all the states 
+pop2015 <- pop2015[-45,]
+
+# changing dc to District of Columbia so it will correspond with the other data 
+pop2015[8,1] <- "District of Columbia"
+
+# The scrape for 2015 is finished. 
+
+
+############################
+
+# population pr state 2016 
+# For 2016 we are also using the rvest package to scrape the following website with the data for 2016.
+page <- read_html("https://dilemma-x.net/2016/12/21/u-s-state-populations-2016-most-populous-states/")
+
+# the table are in the node "tr td"
+pop2016 <- page%>% html_nodes("tr td") %>% html_text()
+
+# same prosidure as for 2015
+pop2016 <- as.data.frame(pop2016)
+pop2016 <- tbl_df(pop2016)
+
+# removing all the data for the rows not containing the table we want, could to this just collecting the rows as well.
+pop2016 <- pop2016[-c(1:364),]
+pop2016 <- pop2016[-c(172:213),]
+
+# same prosidure as for 2015
+pop2016 <- as.data.frame(split(pop2016, 1:3))
+pop2016 <- tbl_df(pop2016)
+
+# removing a colum for 2010 data 
+pop2016$pop2016.1 <- NULL
+
+# renaming colums 
+names(pop2016)[1] <- "State"
+names(pop2016)[2] <- "Population2016"
+
+# removing summary rows of data
+pop2016 <- pop2016[-c(1:6),]
+
+# making everything as characters so we can use the function below 
+pop2016$State <- as.character(pop2016$State)
+pop2016$Population2016 <- as.character(pop2016$Population2016)
+
+# removing "," from the data so could make numeric 
+pop2016[] <- lapply(pop2016, function(x) as.character(gsub("[,]", "", x)))
+
+# making numeric
+pop2016$Population2016 <- as.numeric(pop2016$Population2016)
+
+# arranging the states alfabeticaly 
+pop2016 <- pop2016[order(pop2016$State),]
+
+# Populationdata for 2016 is ready 
+
+############################
+
+# Population pr state 2017 
+# This is a wikipedia table so it is really nice to scrape using the htmlTab package 
+pop2017 <- htmltab("https://en.wikipedia.org/wiki/List_of_states_and_territories_of_the_United_States_by_population",3)
+
+# already a table, so just removing the colums we dont need 
+pop2017 <- pop2017[,c(1,3)]
+
+# making it a tibble 
+pop2017 <- tbl_df(pop2017)
+
+# removing the rows containing summarys and other variables not relevant 
+pop2017 <- pop2017[-c(7,13,14,22,27,32,33,39,47,48,57,63,64,65,66,67,68,69,70,71),]
+
+# we now have 51 states, and renaming the colums 
+names(pop2017)[1] <- "State"
+names(pop2017)[2] <- "Population2017"
+
+# Just doing the same as for the previous years 
+pop2017$State <- as.character(pop2017$State)
+pop2017$Population2017 <- as.character(pop2017$Population2017)
+pop2017[] <- lapply(pop2017, function(x) as.character(gsub("[,]", "", x)))
+pop2017$Population2017 <- as.numeric(pop2017$Population2017)
+pop2017 <- pop2017[order(pop2017$State),]
+
+# 2017 is now ready for take off.
+
+############################
+
+# for 2018 we are back with the rvest package and "tr td" so this should be a quick one.
+page <- read_html("http://worldpopulationreview.com/states/")
+pop2018 <- page%>% html_nodes("tr td") %>% html_text()
+pop2018 <- as.data.frame(pop2018)
+pop2018 <- as.data.frame(split(pop2018, 1:5))
+pop2018 <- tbl_df(pop2018)
+pop2018 <- pop2018[,c(2,3)]
+names(pop2018)[1] <- "State"
+names(pop2018)[2] <- "Population2018"
+pop2018 <- pop2018[-1,]
+pop2018$State <- as.character(pop2018$State)
+pop2018$Population2018 <- as.character(pop2018$Population2018)
+pop2018[] <- lapply(pop2018, function(x) as.character(gsub("[,]", "", x)))
+pop2018$Population2018 <- as.numeric(pop2018$Population2018)
+pop2018 <- pop2018[order(pop2018$State),]
+
+# Boom, 2018 is go, then we just merge all the datasets togheter with the merge function.
+PopulationUS <- Reduce(function(x, y) merge(x, y, all=TRUE), list(pop2015,pop2016,pop2017,pop2018))
+# This is actually so cool hehe. 
+```
+
+
+```{r Data_import_unemployment}
+# it is also interesting to see if we can see some correlation with drug overdoses and unemployment rates for the different states, so we should scrape some data on that as well. BTW, we are using the CSS selector gadget plugin for Google chrome to
+# see what nodes we should collect from the different webpages. 
+
+# for 2015 
+page <- read_html("https://www.bls.gov/lau/lastrk15.htm")
+states2015 <- page%>% html_nodes("tr th") %>% html_text()
+states2015 <- as.data.frame(states2015)
+states2015 <- tbl_df(states2015)
+states2015 <- states2015[c(5:55),]
+names(states2015)[1] <- "State"
+states2015$State <- as.character(states2015$State)
+
+
+figures2015 <- page%>% html_nodes("td span") %>% html_text()
+figures2015 <- as.data.frame(figures2015)
+figures2015 <- tbl_df(figures2015)
+
+figures2015 <- figures2015[c(4:105),]
+figures2015 <- as.data.frame(split(figures2015, 1:2))
+figures2015 <- tbl_df(figures2015)
+names(figures2015)[1] <- "Rate2015"
+names(figures2015)[2] <- "Rank2015"
+figures2015$Rate2015 <- as.character(figures2015$Rate2015)
+figures2015$Rank2015 <- as.character(figures2015$Rank2015)
+figures2015$Rate2015 <- as.numeric(figures2015$Rate2015)
+figures2015$Rank2015 <- as.numeric(figures2015$Rank2015)
+
+unploy2015 <- cbind(states2015,figures2015) 
+unploy2015 <- unploy2015[order(unploy2015$State),]
+
+
+# Same structure on data for the other years so just doing the same but changing the numbers to 201x
+# for 2016
+page <- read_html("https://www.bls.gov/lau/lastrk16.htm")
+states2016 <- page%>% html_nodes("tr th") %>% html_text()
+states2016 <- as.data.frame(states2016)
+states2016 <- tbl_df(states2016)
+states2016 <- states2016[c(5:55),]
+names(states2016)[1] <- "State"
+states2016$State <- as.character(states2016$State)
+
+figures2016 <- page%>% html_nodes("td span") %>% html_text()
+figures2016 <- as.data.frame(figures2016)
+figures2016 <- tbl_df(figures2016)
+
+figures2016 <- figures2016[c(4:105),]
+figures2016 <- as.data.frame(split(figures2016, 1:2))
+figures2016 <- tbl_df(figures2016)
+names(figures2016)[1] <- "Rate2016"
+names(figures2016)[2] <- "Rank2016"
+figures2016$Rate2016 <- as.character(figures2016$Rate2016)
+figures2016$Rank2016 <- as.character(figures2016$Rank2016)
+figures2016$Rate2016 <- as.numeric(figures2016$Rate2016)
+figures2016$Rank2016 <- as.numeric(figures2016$Rank2016)
+
+unploy2016 <- cbind(states2016,figures2016) 
+unploy2016 <- unploy2016[order(unploy2016$State),]
+
+# for 2017
+page <- read_html("https://www.bls.gov/lau/lastrk17.htm")
+states2017 <- page%>% html_nodes("tr th") %>% html_text()
+states2017 <- as.data.frame(states2017)
+states2017 <- tbl_df(states2017)
+states2017 <- states2017[c(5:55),]
+names(states2017)[1] <- "State"
+states2017$State <- as.character(states2017$State)
+
+
+figures2017 <- page%>% html_nodes("td span") %>% html_text()
+figures2017 <- as.data.frame(figures2017)
+figures2017 <- tbl_df(figures2017)
+
+figures2017 <- figures2017[c(4:105),]
+figures2017 <- as.data.frame(split(figures2017, 1:2))
+figures2017 <- tbl_df(figures2017)
+names(figures2017)[1] <- "Rate2017"
+names(figures2017)[2] <- "Rank2017"
+figures2017$Rate2017 <- as.character(figures2017$Rate2017)
+figures2017$Rank2017 <- as.character(figures2017$Rank2017)
+figures2017$Rate2017 <- as.numeric(figures2017$Rate2017)
+figures2017$Rank2017 <- as.numeric(figures2017$Rank2017)
+
+unploy2017 <- cbind(states2017,figures2017) 
+unploy2017 <- unploy2017[order(unploy2017$State),]
+
+
+# for 2018 (october)
+page <- read_html("https://www.bls.gov/web/laus/laumstrk.htm")
+states2018 <- page%>% html_nodes("tr th") %>% html_text()
+states2018 <- as.data.frame(states2018)
+states2018 <- tbl_df(states2018)
+states2018 <- states2018[c(4:54),]
+names(states2018)[1] <- "State"
+states2018$State <- as.character(states2018$State)
+
+
+figures2018 <- page%>% html_nodes("td span") %>% html_text()
+figures2018 <- as.data.frame(figures2018)
+figures2018 <- tbl_df(figures2018)
+
+figures2018 <- figures2018[c(3:104),]
+figures2018 <- as.data.frame(split(figures2018, 1:2))
+figures2018 <- tbl_df(figures2018)
+names(figures2018)[1] <- "Rate2018"
+names(figures2018)[2] <- "Rank2018"
+figures2018$Rate2018 <- as.character(figures2018$Rate2018)
+figures2018$Rank2018 <- as.character(figures2018$Rank2018)
+figures2018$Rate2018 <- as.numeric(figures2018$Rate2018)
+figures2018$Rank2018 <- as.numeric(figures2018$Rank2018)
+
+unploy2018 <- cbind(states2018,figures2018) 
+unploy2018 <- unploy2018[order(unploy2018$State),]
+
+# combining all the data in to one data set 
+unployUS <- cbind(unploy2015,unploy2016,unploy2017,unploy2018)
+unployUS <- unployUS[,-c(4,7,10)]
+
+# we are up and running 
+
+
+# combining the two datasets
+comparedata <- cbind(PopulationUS,unployUS)
+comparedata <- comparedata[,-6]
+
+```
+
+
+```{r Data_import_weather}
+
+# weather data 
+# sunshine 
+
+page <- read_html("https://www.currentresults.com/Weather/US/average-annual-state-sunshine.php")
+
+sun <- page%>% html_nodes("tr td") %>% html_text()
+
+sun <- as.data.frame(sun)
+
+sun <- as.data.frame(split(sun, 1:5))
+
+sun <- tbl_df(sun)
+
+sun <- sun[,c(1,5)]
+
+names(sun)[1] <- "State"
+names(sun)[2] <- "Clear_days"
+
+sun$State <- as.character(sun$State)
+sun$Clear_days <- as.character(sun$Clear_days)
+sun$Clear_days <- as.numeric(sun$Clear_days)
+
+sun <- sun[order(sun$State),]
+
+# finished 
+
+
+
+# temperature 
+page <- read_html("https://www.currentresults.com/Weather/US/average-annual-state-temperatures.php")
+
+temp <- page%>% html_nodes("tr td") %>% html_text()
+
+temp <- as.data.frame(temp)
+
+temp <- as.data.frame(split(temp, 1:4))
+
+temp <- tbl_df(temp)
+
+temp <- temp[,c(1,3)]
+
+names(temp)[1] <- "State"
+names(temp)[2] <- "TempC"
+
+temp$State <- as.character(temp$State)
+temp$TempC <- as.character(temp$TempC)
+temp$TempC <- as.numeric(temp$TempC)
+
+temp <- temp[order(temp$State),]
+
+# finished 
+
+page <- read_html("https://www.currentresults.com/Weather/US/average-annual-state-precipitation.php")
+
+prec <- page%>% html_nodes("tr td") %>% html_text()
+
+prec <- as.data.frame(prec)
+
+prec <- as.data.frame(split(prec, 1:4))
+
+prec <- tbl_df(prec)
+
+prec <- prec[,c(1,3)]
+
+names(prec)[1] <- "State"
+names(prec)[2] <- "PrecipitationMM"
+
+prec$State <- as.character(prec$State)
+prec$PrecipitationMM <- as.character(prec$PrecipitationMM)
+prec$PrecipitationMM <- as.numeric(prec$PrecipitationMM)
+
+prec <- prec[order(prec$State),]
+
+# finished 
+
+weather <- cbind(sun,temp,prec)
+weather <- weather[,c(1,2,4,6)]
+# DC missing so must NA manually 
+DC <-  data.frame(State = "District of Columbia", Clear_days = NA, TempC = NA, PrecipitationMM = NA)
+weather = rbind(weather,DC)
+weather <- weather[order(weather$State),]
+# weather data is finished 
+
+#########################
+# Adding it to "comparedata"
+
+comparedata <- cbind(comparedata,weather)
+comparedata <- comparedata[,-14]
+
+  
+```
+
+
+```{r Data_import_income}
 # Data on medianincome from api
 getdata <- fromJSON("https://api.datausa.io/api/?sort=desc&show=geo&required=income&sumlevel=state&year=all&where=geo%3A%5E04000US")
 
@@ -184,15 +558,75 @@ income <- income %>% mutate(state = case_when(
                                               state == "04000US55" ~ "Wisconsin",
                                               state == "04000US56" ~ "Wyoming",
                                               state == "04000US72" ~ "Puerto Rico"))
+
+  
+income2015 <-  income %>% filter(year == 2015)
+income2015 <- income2015[,c(2,3)]
+income2015 <- income2015[-40,]
+names(income2015)[1]  <- "State"
+names(income2015)[2]  <- "Median_income15"
+income2015 <- income2015[order(income2015$State),]
+
+
+
+income2016 <-  income %>% filter(year == 2016)
+income2016 <- income2016[,c(2,3)]
+income2016 <- income2016[-52,]
+names(income2016)[1]  <- "State"
+names(income2016)[2]  <- "Median_income16"
+income2016 <- income2016[order(income2016$State),]
+
+
+incomeUS <- cbind(income2015,income2016)
+incomeUS <- incomeUS[,c(1,2,4)]
 ```
 
 
+```{r Data_import_maps}
+# setting digits to 9 for precise latitude longitude data 
+options(digits=9)
 
-```{r}
-#unique(drug_set$Indicator)
+# setting what page to scrape HTML data from 
+page <- read_html("https://inkplant.com/code/state-latitudes-longitudes")
 
+# Naming the dataset and collecting the html node (data table) from our page as html text
+statesmap <- page%>% html_nodes("tr td") %>% html_text()
+
+# making it a dataframe of 1 colum and 156 observations 
+statesmap <- as.data.frame(statesmap)
+
+# dividing it to three colums spliting for three observations a time into one of the three colums 
+statesmap <- as.data.frame(split(statesmap, 1:3))
+
+# making every colum to a character colum so it is easy to work with 
+statesmap$statesmap <- as.character(statesmap$statesmap)
+statesmap$statesmap.1 <- as.character(statesmap$statesmap.1)
+statesmap$statesmap.2 <- as.character(statesmap$statesmap.2)
+
+# Using dplyr to convert it from 'data.frame' to ???tbl_df???, ???tbl??? and 'data.frame'
+statesmap <- tbl_df(statesmap)
+
+# making the first row the names of the variable then removing the row afterwards 
+colnames(statesmap) <- statesmap[1,]
+statesmap <- statesmap[-1, ,drop=FALSE]
+
+# making the longitude and latitude data numeric
+statesmap$Latitude <- as.numeric(statesmap$Latitude)
+statesmap$Longitude <- as.numeric(statesmap$Longitude)
+
+# ordering alfabetically just in case
+statesmap <- statesmap[order(statesmap$State),]
 
 ```
+
+
+```{r Compare_data_set}
+# Last cbind to make the compare date complete 
+comparedata <- cbind(comparedata, incomeUS, statesmap)
+comparedata <- comparedata[,-c(17,20)]
+
+```
+
 
 ```{r Monthly}
 
@@ -227,10 +661,10 @@ avg_monthly_2017 <- avg_monthly_2017[c(5,4,8,1,9,7,6,2,12,11,10,3),]
 #Putting the months for 2018 in the right order (ONLY 4 MONTHS FOR THIS SET)
 avg_monthly_2018 <- avg_monthly_2018[c(3,2,4,1),]
 
-ggplot() +
-    geom_line(data = felles, aes(x = quote_date, y =close.x), colour = "red" ) +   #Equinor
-    geom_line(data = felles, aes(x = quote_date, y =close.y), colour = "blue") +    #Hydro
-    xlab("Date") + ylab("Closing price") #Bytter navn p?? x og y verdien
+# ggplot() +
+#    geom_line(data = felles, aes(x = quote_date, y =close.x), colour = "red" ) +   #Equinor
+#     geom_line(data = felles, aes(x = quote_date, y =close.y), colour = "blue") +    #Hydro
+#     xlab("Date") + ylab("Closing price") #Bytter navn p?? x og y verdien
 
 ggplot() +
     geom_line(data = avg_monthly_2015, aes(x = Month, y =Deaths,group = 1), colour = "red" ) +   #2015
@@ -277,8 +711,8 @@ ggplot() +
 
 
 
-unique(drug_set$State)
-unique(drug_set$Indicator)
+# unique(drug_set$State)
+# unique(drug_set$Indicator)
 
 ```
 
@@ -291,19 +725,19 @@ ggplot(data = income, aes(x=median_income, y=state, colour = state)) +
   labs(
         title = "Scatter plot of median income",
         x = "Median income",
-        y = "State") 
-) #Ignore error
+        y = "State") #Ignore error
 
 ```
 
-```{r death_by_drug_graph}
+
+```{r Death_by_drug_graph}
 
 #Sorting out by the type of drugs
 just_drugs <- drug_set %>%
   filter(
-    Indicator != "Number of Deaths"  & 
+    Indicator != "Number of Deaths"  &
     Indicator != "Number of Drug Overdose Deaths"  &
-    Indicator != "Percent with drugs specified" 
+    Indicator != "Percent with drugs specified"
 
 )
 
@@ -316,7 +750,7 @@ ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
     labs(
         title = "Most lethal drug",
         x = "Deaths",
-        y = "Drug") 
+        y = "Drug")
 ```
 
 <!--Jumbotron -->
@@ -375,56 +809,23 @@ ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
   <h2 class = "text-center"> Map </h2>
 
 
-```{r Data_setup_maps}
-# setting digits to 9 for precise latitude longitude data 
-options(digits=9)
-
-# setting what page to scrape HTML data from 
-page <- read_html("https://inkplant.com/code/state-latitudes-longitudes")
-
-# Naming the dataset and collecting the html node (data table) from our page as html text
-statesmap <- page%>% html_nodes("tr td") %>% html_text()
-
-# making it a dataframe of 1 colum and 156 observations 
-statesmap <- as.data.frame(statesmap)
-
-# dividing it to three colums spliting for three observations a time into one of the three colums 
-statesmap <- as.data.frame(split(statesmap, 1:3))
-
-# making every colum to a character colum so it is easy to work with 
-statesmap$statesmap <- as.character(statesmap$statesmap)
-statesmap$statesmap.1 <- as.character(statesmap$statesmap.1)
-statesmap$statesmap.2 <- as.character(statesmap$statesmap.2)
-
-# Using dplyr to convert it from 'data.frame' to ???tbl_df???, ???tbl??? and 'data.frame'
-statesmap <- tbl_df(statesmap)
-
-# making the first row the names of the variable then removing the row afterwards 
-colnames(statesmap) <- statesmap[1,]
-statesmap <- statesmap[-1, ,drop=FALSE]
-
-# making the longitude and latitude data numeric
-statesmap$Latitude <- as.numeric(statesmap$Latitude)
-statesmap$Longitude <- as.numeric(statesmap$Longitude)
+<center>
+```{r Map, echo = FALSE, message= FALSE, fig.width=8}
 
 # for the leaflet function 
 lat <- as.numeric(statesmap$Latitude)
 long <- as.numeric(statesmap$Longitude)
 namestate <- statesmap$State
 
+namestate[1] <- "Alabama is the best place in the world, and it is great. there where blablabla. And alabama can suck my knob"
+
 # dataset is finished 
 knitr::kable(head(statesmap))
-
-```
-
-
-<center>
-```{r map, echo = FALSE, message= FALSE, fig.width=8}
 
 # basic map
 m <- leaflet() %>%
   addTiles() %>%  
-  addMarkers(lng=c(long), lat=c(lat), 
+  addMarkers(lng=c(statesmap$Longitude), lat=c(statesmap$Latitude), 
              popup = c(namestate))
 m
 
@@ -465,24 +866,6 @@ leaflet() %>%
 </center>
 
 
-
-```{r}
-
-
-library(housingData)
-df1 <- geoCounty
-
-alabama <- filter(df1, rMapState=="alabama")
-mean(alabama$lon)
-mean(alabama$lat)
-
-
-
-m <- leaflet() %>%
-  addTiles() %>%  # Add default OpenStreetMap map tiles
-  addMarkers(lng=mean(alabama$lon), lat=mean(alabama$lat), popup="The birthplace of R")
-m
-```
 
 
 
