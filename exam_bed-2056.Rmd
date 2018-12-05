@@ -11,20 +11,18 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE)
+
 ```
 
 ```{r Data_import_main, echo = FALSE, message = FALSE, warning= FALSE}
 rm(list = ls())
-library(tidyverse)
-library(leaflet)
-library(dplyr)
-library(readr)
-library(jsonlite)
-library(rvest)
-library(magrittr)
-library(rvest)
-library(htmltab)
+library(pacman)
+p_load(tidyverse, leaflet, dplyr, readr, reshape2,
+       jsonlite, rvest, magrittr, htmltab, knitr)
 
 # Data on Drug accidents in the US 2015-2018
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
@@ -95,21 +93,18 @@ drug_set <- drug_set[,c(10,1,2,3,4,5,6,7,8,9)]
 
 
 # Taking a look at the dataset after cleaning. 
-knitr::kable(head(drug_set))
+# knitr::kable(head(drug_set))
 
 # Examining the footnote colum
-unique(drug_set$Footnote)
-unique(drug_set$Year)
+# unique(drug_set$Footnote)
+# unique(drug_set$Year)
+
 
 # If the code below is runned the data for 2017 and 2018 are removed. This is because the investigation on cases not are 
 # juridicaly finished and solved and some cases are underreported due to incomplete data. We still want to use the data for 2017 and 2018.
 
 # drug_set <- drug_set %>%
   # filter(is.na(Footnote))
-
-
-
-
 
 ##################################
 
@@ -262,6 +257,8 @@ pop2018 <- pop2018[order(pop2018$State),]
 PopulationUS <- Reduce(function(x, y) merge(x, y, all=TRUE), list(pop2015,pop2016,pop2017,pop2018))
 # This is actually so cool hehe. 
 ```
+
+
 
 
 ```{r Data_import_unemployment}
@@ -568,7 +565,6 @@ names(income2015)[2]  <- "Median_income15"
 income2015 <- income2015[order(income2015$State),]
 
 
-
 income2016 <-  income %>% filter(year == 2016)
 income2016 <- income2016[,c(2,3)]
 income2016 <- income2016[-52,]
@@ -584,7 +580,7 @@ incomeUS <- incomeUS[,c(1,2,4)]
 
 ```{r Data_import_maps}
 # setting digits to 9 for precise latitude longitude data 
-options(digits=9)
+#options(digits=9)
 
 # setting what page to scrape HTML data from 
 page <- read_html("https://inkplant.com/code/state-latitudes-longitudes")
@@ -628,17 +624,388 @@ comparedata <- comparedata[,-c(17,20)]
 ```
 
 
+```{r Data_import_drugOD_state}
+
+# Drug overdoses pr state for 2015 
+drug_od_state15 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015') 
+drug_od_state15 <- drug_od_state15[,c(1,6)]
+drug_od_state15 <- drug_od_state15[1:636,]
+colnames(drug_od_state15) <- c("State", "Drug_od15")
+drug_od_state15 <- aggregate(Drug_od15~State, drug_od_state15 , sum)
+drug_od_state15 <- drug_od_state15[-c(45,53),]
+drug_od_state15 <- tbl_df(drug_od_state15)
+drug_od_state15 <- drug_od_state15[order(drug_od_state15$State),]
+
+
+
+# Drug overdoses pr state for 2016 
+drug_od_state16 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2016')
+drug_od_state16 <- drug_od_state16[,c(1,6)]
+drug_od_state16 <- drug_od_state16[1:636,]
+colnames(drug_od_state16) <- c("State", "Drug_od16")
+drug_od_state16 <- aggregate(Drug_od16~State, drug_od_state16 , sum)
+drug_od_state16 <- drug_od_state16[-c(45,53),]
+drug_od_state16 <- tbl_df(drug_od_state16)
+drug_od_state16 <- drug_od_state16[order(drug_od_state16$State),]
+
+
+
+
+# Drug overdoses pr state for 2017 
+drug_od_state17 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2017')
+#f <- filter(drug_od_state17, State_name == "Alaska")
+drug_od_state17 <- drug_od_state17[,c(1,6)]
+drug_od_state17 <- drug_od_state17[1:636,]
+colnames(drug_od_state17) <- c("State", "Drug_od17")
+drug_od_state17 <- aggregate(Drug_od17~State, drug_od_state17 , sum)
+drug_od_state17 <- drug_od_state17[-c(45,53),]
+drug_od_state17 <- tbl_df(drug_od_state17)
+drug_od_state17 <- drug_od_state17[order(drug_od_state17$State),]
+
+
+comparedata <- cbind(comparedata, drug_od_state15, drug_od_state16, drug_od_state17)
+comparedata <- comparedata[,-c(21,23,25)]
+# Now we have everything we need for comparison on drug overdoses pr state!
+```
+
+
+```{r Data_od_pr_state}
+
+odcomp <- cbind(comparedata$State, 
+                comparedata$Drug_od15/comparedata$Population2015,
+                comparedata$Drug_od16/comparedata$Population2016,
+                comparedata$Drug_od17/comparedata$Population2017)
+
+colnames(odcomp) <- c("State","OD15_relation","OD16_relation","OD17_relation")
+odcomp <- tbl_df(odcomp)
+odcomp$OD15_relation <- as.numeric(odcomp$OD15_relation)
+odcomp$OD16_relation <- as.numeric(odcomp$OD16_relation)
+odcomp$OD17_relation <- as.numeric(odcomp$OD17_relation)
+
+
+odcomp$OD15_Deathspr10000 <- odcomp$OD15_relation*10000
+odcomp$OD16_Deathspr10000 <- odcomp$OD16_relation*10000
+odcomp$OD17_Deathspr10000 <- odcomp$OD17_relation*10000
+
+
+# # for alabama 
+# 8818/4858979 # od/pop
+# 10000*0.00181478455 # 18 number of deaths for 10 000 people in alabama 
+ 
+ 
+# # for florida 
+# 65444/20271272
+# 10000*0.00322841112 # 32 number of deaths for 10 000 people in florida 
+ 
+
+# # california 
+# 56001/39144818
+# 10000*0.00143061082 # 14 number of deaths for 10 000 people in california 
+
+```
+
+
+```{r Plot_data}
+# Mulig beste fremstilling av Omsetning, kostnader og driftsresultat?
+odcomp1 <- odcomp
+odcomp1 <- odcomp1[,c(1,5,6,7)]
+colnames(odcomp1) <- c("State","2015","2016","2017")
+odcomp1$State <- as.factor(odcomp1$State) # setting as factor so could use fun melt 
+odcomp2 <- melt(odcomp1) # melting with years as desiding variable 
+names(odcomp2)[2] <- "Year"
+odcomp2$State <- as.character(odcomp2$State)
+
+northeast <-  odcomp2 %>% filter(State %in% c("Connecticut", "Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Vermont", "New Jersey", "New York" ,"Pennsylvania"))
+
+midwest <-  odcomp2 %>% filter(State %in% c("Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin", "Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota"))
+
+
+south <-  odcomp2 %>% filter(State %in% c("Delaware", "Florida", "Georgia", "Maryland", "North Carolina", "South Carolina", "Virginia", "District of Columbia", "West Virginia", "Alabama", "Kentucky", "Mississippi", "Tennessee" ,"Arkansas", "Louisiana", "Oklahoma","Texas"))
+
+
+west <-  odcomp2 %>% filter(State %in% c("Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico", "Utah", "Wyoming", "Alaska", "California", "Hawaii", "Oregon", "Washington"))
+
+
+# Region 1: Northeast
+# Division 1: New England (Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, and Vermont)
+# Division 2: Mid-Atlantic (New Jersey, New York, and Pennsylvania)
+
+# Region 2: Midwest (Prior to June 1984, the Midwest Region was designated as the North Central Region.)[6]
+# Division 3: East North Central (Illinois, Indiana, Michigan, Ohio, and Wisconsin)
+# Division 4: West North Central (Iowa, Kansas, Minnesota, Missouri, Nebraska, North Dakota, and South Dakota)
+
+# Region 3: South
+# Division 5: South Atlantic (Delaware, Florida, Georgia, Maryland, North Carolina, South Carolina, Virginia, District of Columbia, and West Virginia)
+# Division 6: East South Central (Alabama, Kentucky, Mississippi, and Tennessee)
+# Division 7: West South Central (Arkansas, Louisiana, Oklahoma, and Texas)
+
+# Region 4: West
+# Division 8: Mountain (Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah, and Wyoming)
+# Division 9: Pacific (Alaska, California, Hawaii, Oregon, and Washington)
+```
+
+# Drug related deaths in the US - A case study 
+
+## Overview and Motivation:
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+
+## Related Work: Anything that inspired you, such as a paper, a web site, or something we discussed in class:
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+
+## Summary of study
+Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+
+# Let´s get dirty & take a look at the total number of drug deaths per state scaled for 10 000 inhabitants.
+## Northeast 
+```{r northeast_plot}
+ggplot(northeast, aes(x = State, y = value, fill = Year)) +
+geom_bar(stat="identity", width=.7, position = "dodge") + 
+  coord_flip()+
+  theme_classic() +
+  scale_fill_brewer(palette="PuBu")+
+  labs(
+        title = "OD-deaths pr 10 000 inhabitants",
+        x = "State",
+        y = "Deaths") 
+```
+
+
+## Midwest
+```{r midwest_plot}
+ggplot(midwest, aes(x = State, y = value, fill = Year)) +
+geom_bar(stat="identity", width=.7, position = "dodge") + 
+  coord_flip()+
+  theme_classic() +
+  scale_fill_brewer(palette="BrBG")+
+  labs(
+        title = "OD-deaths pr 10 000 inhabitants",
+        x = "State",
+        y = "Deaths") 
+```
+
+
+## South 
+```{r south_plot}
+ggplot(south, aes(x = State, y = value, fill = Year)) +
+geom_bar(stat="identity", width=.7, position = "dodge") + 
+  coord_flip()+
+  scale_fill_brewer(palette="YlOrRd")+
+  theme_classic() +
+  labs(
+        title = "OD-deaths pr 10 000 inhabitants",
+        x = "State",
+        y = "Deaths") 
+```
+
+
+## West
+```{r west_plot}
+ggplot(west, aes(x = State, y = value, fill = Year)) +
+geom_bar(stat="identity", width=.7, position = "dodge") + 
+  coord_flip()+
+  scale_fill_brewer(palette="PuRd")+
+  theme_classic() +
+  labs(
+        title = "OD-deaths pr 10 000 inhabitants",
+        x = "State",
+        y = "Deaths")
+
+```
+
+
+
+## Compared to one another 2016
+
+```{r}
+ggplot() +
+  geom_bar(stat = "identity", data = odcomp, aes (x = State, y = OD16_Deathspr10000, fill = State)) +
+  coord_flip()+
+  guides(fill=FALSE)+
+  theme_classic() + 
+  #scale_x_discrete(expand=c(0,0)) +
+  #scale_y_continuous(expand=c(0,0)) +
+  #scale_x_continuous(breaks = driftres$year) +
+  labs(
+        title = "OD deaths pr 10 000 inhabitants 2016",
+        x = "State",
+        y = "Deaths")
+```
+
+
+```{r key_numbers_for_text}
+# Key numbers ods. 
+m15 <- mean(drug_od_state15$Drug_od15) # gjennomsnittlig døde av overdose pr stat 2015
+m16 <- mean(drug_od_state16$Drug_od16) # gjennomsnittlig døde av overdose pr stat 2016
+m17 <- mean(drug_od_state17$Drug_od17) # gjennomsnittlig døde av overdose pr stat 2017
+tot15 <- sum(drug_od_state15$Drug_od15) # totalt antall døde av overdose pr stat 2015
+tot16 <- sum(drug_od_state16$Drug_od16) # totalt antall døde av overdose pr stat 2016
+tot17 <- sum(drug_od_state17$Drug_od17) # totalt antall døde av overdose pr stat 2017
+
+
+
+# (Present-past)/past * 100 = percentage change
+percha16 <- ((m16-m15)/m15)*100 # prosent endring fra 2015-2016 overdoser usa 
+percha17 <- ((m17-m16)/m16)*100 # prosent endring fra 2016-2017 overdoser usa 
+perchatot <- ((m17-m15)/m15)*100 # prosent endring fra 2015-2017 overdoser usa 
+
+
+```
+
+This is some serious numbers. The total average drug deaths per state for 2015 is 11 585 and worse, it increased to 15 856 in 2017. This is an increase of `r round(perchatot,2)`% from 2015 to 2017, implefying that it is a serious problem in the us. The total number of deaths by drugs was 590 825 in 2015, 682 084 in 2016 and 808 661 in 2017. This equals a total of 2 081 570 people just for the three years this case study is studying. That´s the same as the total population of Slovenia to put things in perspective. Wiped out over three years.
+
+
+```{r table_of_od}
+options(digits=2)
+
+# Od rate table with worst states 2017
+odcomphigh <- odcomp[with(odcomp,order(-OD16_Deathspr10000)),]
+
+odcomphigh <- odcomphigh[1:10,]
+
+odcomphigh <- odcomphigh[,-c(2,3,4,5,7)]
+odcomphigh$Rank <- c(1:10)
+names(odcomphigh)[2] <- "Deaths pr 10000 inhabitants"
+#kable(odcomphigh, format = "html", caption = "The 10 states with the highest O.D-rate in 2016")
+
+
+# lets compare to the states with lowest income 
+inclow <- income2016[with(income2016,order(-Median_income16)),]
+
+inclow <- inclow[42:51,] 
+inclow$Rank <- c(42:51)
+
+names(inclow)[2] <- "Median household income 2016"
+inclow <-inclow[seq(dim(inclow)[1],1),]
+#kable(inclow, format = "html", caption = "The 10 states with lowest median household income in 2016")
+
+
+
+# Od rate Table with best states 2016 
+odcomplow <- odcomp[with(odcomp,order(-OD16_Deathspr10000)),]
+
+odcomplow <- odcomplow[42:51,]
+
+odcomplow <- odcomplow[,-c(2,3,4,5,7)]
+
+odcomplow <- odcomplow[seq(dim(odcomplow)[1],1),]
+odcomplow$Rank <- c(1:10)
+names(odcomplow)[2] <- "Deaths pr 10000 inhabitants"
+
+#kable(odcomplow, format = "html", caption = "The 10 states with the lowest O.D-rate in 2016")
+
+
+# Lets take a look at income and compare 
+
+inchigh <- income2016[with(income2016,order(-Median_income16)),]
+
+inchigh <- inchigh[1:10,]  
+inchigh$Rank <- c(1:10)
+
+names(inchigh)[2] <- "Median household income 2016"
+#kable(inchigh, format = "html", caption = "The 10 states with highest median household income in 2016")
+
+# What about unemployment rate?
+
+ployhigh <- unploy2016[with(unploy2016,order(-Rate2016)),]
+names(ployhigh)[3] <- "Rank"
+ploylow <-  ployhigh[42:51,] 
+ployhigh <- ployhigh[1:10,] 
+names(ploylow)[2] <- "The unemployment rate in percent of states labor force 2016"
+names(ployhigh)[2] <- "The unemployment rate in percent of states labor force 2016"
+ploylow <-  tbl_df(ploylow)
+ployhigh <- tbl_df(ployhigh)
+ploylow <- ploylow[seq(dim(ploylow)[1],1),]
+
+row.names(ploylow) <- NULL
+row.names(ployhigh) <- NULL
+
+
+# weather with regards to temperature? 
+
+weathergood <- weather[with(weather,order(-TempC)),]
+weathergood <- weathergood[-51,]
+weathergood <- weathergood[,c(1,3)]
+weatherbad <- weathergood[41:50,]
+weathergood <- weathergood[1:10,]
+weathergood$Rank <- c(1:10)
+weathergood <-  tbl_df(weathergood)
+weatherbad <- tbl_df(weatherbad)
+weatherbad <- weatherbad[seq(dim(weatherbad)[1],1),]
+weatherbad$Rank <- c(1:10)
+row.names(weathergood) <- NULL
+row.names(weatherbad) <- NULL
+
+#kable(ploylow, format = "html", caption = "The 10 states with lowest unemployment in 2016")
+#kable(ployhigh, format = "html", caption = "The 10 states with highest unemployment in 2016")
+
+```
+
+## Low income and high unemployment will result in high overdose rate?
+Our assupmption is that low income and high unemployment equals high od-rate. So we take a look at the top 10 states of high od-rate, lowest income and highest unemployment. 
+```{r}
+knitr::kable(list(odcomphigh, inclow,ployhigh))
+
+```
+As we can se this is not allways the case. West Wirginia stands out and is represented badly in all three categories. The people working in DC make good money, but both unemployment and od-rate are high. Kentucky is represented in the table for low income. Maryland is the states with highest income the last couple of years by a solid margin, and is the 9th worst place for od in the country. Othervise the similarities was not as strong as expected.
+
+## But high income and low unemployment would equal low od-rate right?
+Not for Maryland thats for sure. 
+```{r}
+knitr::kable(list(odcomplow, inchigh,ploylow))
+
+```
+
+## What about the states with High(good) and low(bad) temperatures?
+
+```{r}
+knitr::kable(list(weathergood, weatherbad))
+```
+
+blablabla
+
+```{r correlation}
+
+# jo flere folk som bor i en stat
+cor(comparedata$Drug_od16,comparedata$Population2016)
+
+# jo høyere arbeidsledighet 
+cor(comparedata$Drug_od16,comparedata$Rate2016)
+
+
+# jo høyere inntekt 
+cor(comparedata$Drug_od16,comparedata$Median_income16)
+
+comparedata2 <- comparedata
+comparedata2 <- comparedata2[-9,]
+
+# jo høyere temperatur 
+cor(comparedata2$Drug_od16,comparedata2$TempC)
+
+```
+
+
+  
+
+
 ```{r Monthly}
 #Monthly average overdose deaths for every year and for all drugs in the dataset
 
 #All type of drug deaths in 2015
 NODOD_2015 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015')
+NODOD_2015 <- NODOD_2015[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2016
 NODOD_2016 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2016')
+NODOD_2016 <- NODOD_2016[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2017
 NODOD_2017 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2017')
+NODOD_2017 <- NODOD_2017[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2018
 NODOD_2018 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2018')
+NODOD_2018 <- NODOD_2018[1:212,] # REMOVING DUPLICATES
+
 
 
 #Average deaths related to all drugs by month for 2015
@@ -703,7 +1070,8 @@ ggplot() +
   geom_line(data = avg_monthly_2017, aes(x = Month, y =Deaths,group = 1), colour = "Orange") +  #2017
     geom_line(data = avg_monthly_2018, aes(x = Month, y =Deaths,group = 1), colour = "green") +  #2018
     xlab("Month") + ylab("Deaths")  +
-  scale_x_continuous(breaks = avg_monthly_2015$Month)
+  scale_x_continuous(breaks = avg_monthly_2015$Month) +
+  theme_classic()
 
 ```
 
@@ -718,12 +1086,16 @@ mean_overdoses <- c(mean(avg_monthly_2015$Deaths),mean(avg_monthly_2016$Deaths),
 
 #All types of deaths in 2015
 NOD_2015 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2015')
+NOD_2015 <- NOD_2015[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2016
 NOD_2016 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2016')
+NOD_2016 <- NOD_2016[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2017
 NOD_2017 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2017')
+NOD_2017 <- NOD_2017[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2018
 NOD_2018 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2018')
+NOD_2018 <- NOD_2018[1:212,] # REMOVING DUPLICATES
 
 #Average deaths by month for 2015
 avg_monthly_deaths_2015 <- aggregate(Deaths ~ Month, NOD_2015, mean) 
@@ -748,16 +1120,14 @@ mean_deaths <- data.frame(years,mean_deaths)
 
 
 ggplot() +
-    geom_line(data = mean_overdoses, aes(x = years, y =mean_overdoses, group = 1), colour = "red" ) +  xlab("Month") + ylab("Year")  
+    geom_line(data = mean_overdoses, aes(x = years, y =mean_overdoses, group = 1), colour = "red" ) +  xlab("Month") + ylab("Year") + theme_classic()
 
 ggplot() +
-    geom_line(data = mean_deaths, aes(x = years, y =mean_deaths, group = 1), colour = "blue" ) +  xlab("Month") + ylab("Year")  
+    geom_line(data = mean_deaths, aes(x = years, y =mean_deaths, group = 1), colour = "blue" ) +  xlab("Month") + ylab("Year") +
+  theme_classic()
 
 
 ```
-
-
-
 
 
 
@@ -766,6 +1136,8 @@ ggplot() +
 #Scatter plot for median income
 ggplot(data = income, aes(x=median_income, y=state, colour = state)) +
   geom_jitter() +
+  theme_classic()+
+  guides(fill=FALSE)+
   labs(
         title = "Scatter plot of median income",
         x = "Median income",
@@ -797,6 +1169,200 @@ ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
         y = "Drug")
 ```
 
+
+
+
+```{r leaflet_popup_setup}
+# Autogenerated text for the leaflet function 
+# This is quite som work, but it ensures that the autogenerated text for the popup in leaflet is collected automaticaly 
+# with no human errors. Every chunk of code is telling a story for the specific state and is made into data.frame of 51 characters that later are colapsed into one data.frame and the "" seperator between the characters is removed to make it into one text. 
+
+
+stat <-  c(comparedata$State)
+stat <- as.data.frame(stat)
+stat$stat <- as.character(stat$stat)
+
+
+nr1 <- " had a total number of deaths by drugs of "
+nr1 <- rep(nr1, 51)
+nr1 <- as.data.frame(nr1)
+nr1$nr1 <- as.character(nr1$nr1)
+
+
+verdi1 <- c(comparedata$Drug_od16)
+verdi1 <- as.data.frame(verdi1)
+verdi1$verdi1 <- as.character(verdi1$verdi1)
+
+
+nr2 <- " persons in 2016. This is with a population of "
+nr2 <- rep(nr2, 51)
+nr2 <- as.data.frame(nr2)
+nr2$nr2 <- as.character(nr2$nr2)
+
+
+verdi2 <- c(comparedata$Population2016)
+verdi2 <- as.data.frame(verdi2)
+verdi2$verdi2 <- as.character(verdi2$verdi2)
+
+
+nr3 <- " people living in the entire state. This equals to "
+nr3 <- rep(nr3, 51)
+nr3 <- as.data.frame(nr3)
+nr3$nr3 <- as.character(nr3$nr3)
+
+
+verdi3 <- c(round(odcomp$OD16_Deathspr10000,0))
+verdi3 <- as.data.frame(verdi3)
+verdi3$verdi3 <- as.character(verdi3$verdi3)
+
+
+nr4 <- " deaths every 10 000 persons. "
+nr4 <- rep(nr4, 51)
+nr4 <- as.data.frame(nr4)
+nr4$nr4 <- as.character(nr4$nr4)
+
+
+nr5 <- "The state ranked number "
+nr5 <- rep(nr5, 51)
+nr5 <- as.data.frame(nr5)
+nr5$nr5 <- as.character(nr5$nr5)
+
+
+verdi4 <- c(comparedata$Rank2016)
+verdi4 <- as.data.frame(verdi4)
+verdi4$verdi4 <- as.character(verdi4$verdi4)
+
+
+nr6 <- " in total of the 51 states when it came to unemployment, and had a median household income of "
+nr6 <- rep(nr6, 51)
+nr6 <- as.data.frame(nr6)
+nr6$nr6 <- as.character(nr6$nr6)
+
+
+verdi5 <- c(comparedata$Median_income16)
+verdi5 <- as.data.frame(verdi5)
+verdi5$verdi5 <- as.character(verdi5$verdi5)
+
+
+nr7 <- " USD in 2016. "
+nr7 <- rep(nr7, 51)
+nr7 <- as.data.frame(nr7)
+nr7$nr7 <- as.character(nr7$nr7)
+
+
+#stat
+
+
+nr8 <- " has an average of "
+nr8 <- rep(nr8, 51)
+nr8 <- as.data.frame(nr8)
+nr8$nr8 <- as.character(nr8$nr8)
+
+
+verdi6 <- c(comparedata$Clear_days)
+verdi6 <- as.data.frame(verdi6)
+verdi6$verdi6 <- as.character(verdi6$verdi6)
+
+
+nr9 <- " suny days during a year, with a temperature of "
+nr9 <- rep(nr9, 51)
+nr9 <- as.data.frame(nr9)
+nr9$nr9 <- as.character(nr9$nr9)
+
+
+verdi7 <- c(comparedata$TempC)
+verdi7 <- as.data.frame(verdi7)
+verdi7$verdi7 <- as.character(verdi7$verdi7)
+
+
+nr10 <- " degrees and "
+nr10 <- rep(nr10, 51)
+nr10 <- as.data.frame(nr10)
+nr10$nr10 <- as.character(nr10$nr10)
+
+
+verdi8 <- c(comparedata$PrecipitationMM)
+verdi8 <- as.data.frame(verdi8)
+verdi8$verdi8 <- as.character(verdi8$verdi8)
+
+
+nr11 <- " mm downfall in average. All factors that in some way, possibly can explain the overdoses in the state."
+nr11 <- rep(nr11, 51)
+nr11 <- as.data.frame(nr11)
+nr11$nr11 <- as.character(nr11$nr11)
+
+
+# The storytelling is finished, now we collapse everything.
+
+
+popupgo <- paste(stat$stat, nr1$nr1, verdi1$verdi1, nr2$nr2, verdi2$verdi2, nr3$nr3, verdi3$verdi3, nr4$nr4, nr5$nr5, verdi4$verdi4, nr6$nr6, verdi5$verdi5 ,nr7$nr7,stat$stat, nr8$nr8, verdi6$verdi6, nr9$nr9, verdi7$verdi7, nr10$nr10, verdi8$verdi8, nr11$nr11, sep ="")
+
+
+```
+
+
+
+```{r Map, echo = FALSE, message= FALSE, fig.width=8}
+# The map is interactive, so feel free to zoom in and read about the specific states clicking the popup icon. 
+
+# basic map
+m <- leaflet() %>%
+  addTiles() %>%  
+  addMarkers(lng=c(comparedata$Longitude), lat=c(comparedata$Latitude), 
+             popup = c(popupgo))
+
+# Using a NASA picture by night in 2012 for the map for cooler apperance and to show by light pollution where the crowded areas of the nation is. 
+m %>% addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+
+# code for other apperances:
+# browseURL("https://wiki.earthdata.nasa.gov/display/GIBS/GIBS+API+for+Developers#GIBSAPIforDevelopers-TimeDimension")
+
+# trying some other apperances 
+
+# m %>% addProviderTiles("MtbMap")
+# m %>% addProviderTiles("HikeBike.HikeBike")
+
+# With opacity 0.5
+# leaflet() %>%
+#     addTiles() %>%  
+#     addMarkers(lng=c(long), lat=c(lat), 
+#              popup = c(namestate)) %>% 
+#     addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+#                         options = providerTileOptions(time = "2015-08-30", opacity = 0.5))
+
+# With opacity 1. now a satelitte image 
+# leaflet() %>%
+#     addTiles() %>%  
+#     addMarkers(lng=c(long), lat=c(lat), 
+#              popup = c(namestate)) %>% 
+#     addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+#                         options = providerTileOptions(time = "2015-08-30", opacity = 1))
+
+# 1. december this year  
+# leaflet() %>%
+#     addTiles() %>%  
+#     addMarkers(lng=c(long), lat=c(lat), 
+#              popup = c(namestate)) %>% 
+#     addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
+#                         options = providerTileOptions(time = "2018-12-01", opacity = 0.7))
+```
+
+## What will a linear regression model say about OD dependent on income, weather and unemployment?
+
+```{r linear_regression}
+comparedata <- cbind(comparedata,odcomp)
+
+
+fit <- lm(OD16_relation~Median_income16+PrecipitationMM+Clear_days+Rate2016, data = comparedata)
+
+
+summary(fit)
+
+```
+
+
+
+
 <!--Jumbotron -->
 
 
@@ -825,14 +1391,8 @@ ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
 
 <div class="card">
 <center>
-```{r echo = FALSE, message= FALSE}
-# ggplot() +
-#   geom_bar(data = drugsidents, aes (Race)) +
-#   labs(
-#         title = "Races",
-#         y = "Count") +
-#     theme_dark()
-```
+
+
 </center>
 
 <div class="card-body">
@@ -854,60 +1414,7 @@ ggplot(data=just_drugs, aes(x=Indicator , y= Deaths, fill = Indicator)) +
 
 
 <center>
-```{r Map, echo = FALSE, message= FALSE, fig.width=8}
 
-# for the leaflet function 
-lat <- as.numeric(statesmap$Latitude)
-long <- as.numeric(statesmap$Longitude)
-namestate <- statesmap$State
-
-namestate[1] <- "Alabama is the best place in the world, and it is great. there where blablabla. And alabama can suck my knob"
-
-# dataset is finished 
-knitr::kable(head(statesmap))
-
-# basic map
-m <- leaflet() %>%
-  addTiles() %>%  
-  addMarkers(lng=c(statesmap$Longitude), lat=c(statesmap$Latitude), 
-             popup = c(namestate))
-m
-
-# browseURL("https://wiki.earthdata.nasa.gov/display/GIBS/GIBS+API+for+Developers#GIBSAPIforDevelopers-TimeDimension")
-
-# trying some other apperances 
-m %>% addProviderTiles("MtbMap")
-m %>% addProviderTiles("HikeBike.HikeBike")
-
-# I can like this 
-m %>% addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
-
-# With opacity 0.5
-leaflet() %>%
-    addTiles() %>%  
-    addMarkers(lng=c(long), lat=c(lat), 
-             popup = c(namestate)) %>% 
-    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
-                        options = providerTileOptions(time = "2015-08-30", opacity = 0.5))
-
-# With opacity 1. now a satelitte image 
-leaflet() %>%
-    addTiles() %>%  
-    addMarkers(lng=c(long), lat=c(lat), 
-             popup = c(namestate)) %>% 
-    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
-                        options = providerTileOptions(time = "2015-08-30", opacity = 1))
-
-# 1. december this year  
-leaflet() %>%
-    addTiles() %>%  
-    addMarkers(lng=c(long), lat=c(lat), 
-             popup = c(namestate)) %>% 
-    addProviderTiles("NASAGIBS.ModisTerraTrueColorCR",
-                        options = providerTileOptions(time = "2018-12-01", opacity = 0.7))
-
-```
-</center>
 
 
 
@@ -922,14 +1429,8 @@ leaflet() %>%
 <div class="container-fluid" id="stat_container">   
 
 <div class="col-md-6" id = "graph1">
-```{r graph, echo = FALSE, message= FALSE}
-# ggplot() +
-#   geom_bar(data = drugsidents, aes (Race)) +
-#   labs(
-#         title = "Races",
-#         y = "Count") 
 
-```
+
 </div>
 
 
