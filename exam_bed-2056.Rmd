@@ -626,6 +626,45 @@ comparedata <- comparedata[,-c(17,20)]
 
 ```{r Data_import_drugOD_state}
 
+# average of drug deaths compared to all deaths in the US. 
+# 2015 
+totaldeath15 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2015') 
+totaldeath15 <- totaldeath15[,c(1,6)]
+totaldeath15 <- totaldeath15[1:636,]
+colnames(totaldeath15) <- c("State", "Deaths")
+totaldeath15 <- aggregate(Deaths~State, totaldeath15 , sum)
+totaldeath15 <- totaldeath15[-c(45,53),]
+totaldeath15 <- tbl_df(totaldeath15)
+totaldeath15 <- totaldeath15[order(totaldeath15$State),]
+
+
+
+# for 2016 
+totaldeath16 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2016') 
+totaldeath16 <- totaldeath16[,c(1,6)]
+totaldeath16 <- totaldeath16[1:636,]
+colnames(totaldeath16) <- c("State", "Deaths")
+totaldeath16 <- aggregate(Deaths~State, totaldeath16 , sum)
+totaldeath16 <- totaldeath16[-c(45,53),]
+totaldeath16 <- tbl_df(totaldeath16)
+totaldeath16 <- totaldeath16[order(totaldeath16$State),]
+
+
+
+# for 2017 
+totaldeath17 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2017') 
+totaldeath17 <- totaldeath17[,c(1,6)]
+totaldeath17 <- totaldeath17[1:636,]
+colnames(totaldeath17) <- c("State", "Deaths")
+totaldeath17 <- aggregate(Deaths~State, totaldeath17 , sum)
+totaldeath17 <- totaldeath17[-c(45,53),]
+totaldeath17 <- tbl_df(totaldeath17)
+totaldeath17 <- totaldeath17[order(totaldeath17$State),]
+
+
+
+
+
 # Drug overdoses pr state for 2015 
 drug_od_state15 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015') 
 drug_od_state15 <- drug_od_state15[,c(1,6)]
@@ -666,7 +705,32 @@ drug_od_state17 <- drug_od_state17[order(drug_od_state17$State),]
 comparedata <- cbind(comparedata, drug_od_state15, drug_od_state16, drug_od_state17)
 comparedata <- comparedata[,-c(21,23,25)]
 # Now we have everything we need for comparison on drug overdoses pr state!
+
+df1 <- cbind(totaldeath15,drug_od_state15)
+df1$percent <- (df1$Drug_od15/df1$Deaths)*100
+
+# mean(df1$percent) # 1.9 % of all deaths in average in the us was drug related in 2015
+
+
+
+
+df2 <- cbind(totaldeath16,drug_od_state16)
+df2$percent <- (df2$Drug_od16/df2$Deaths)*100
+
+# mean(df2$percent) # 2.2 % of all deaths in average in the us was drug related in 2016
+
+
+
+
+df3 <- cbind(totaldeath17,drug_od_state17)
+df3$percent <- (df3$Drug_od17/df3$Deaths)*100
+
+# mean(df3$percent) # 2.45 % of all deaths in average in the us was drug related in 2017
+
+
+
 ```
+
 
 
 ```{r Data_od_pr_state}
@@ -855,6 +919,12 @@ perchatot <- ((m17-m15)/m15)*100 # prosent endring fra 2015-2017 overdoser usa
 ```
 
 This is some serious numbers. The total average drug deaths per state for 2015 is 11 585 and worse, it increased to 15 856 in 2017. This is an increase of `r round(perchatot,2)`% from 2015 to 2017, implefying that it is a serious problem in the us. The total number of deaths by drugs was 590 825 in 2015, 682 084 in 2016 and 808 661 in 2017. This equals a total of 2 081 570 people just for the three years this case study is studying. That´s the same as the total population of Slovenia to put things in perspective. Wiped out over three years.
+
+## But how many drug deaths do we find compared to all deaths?
+A small percentage:
+1.9 % of all deaths in average in the us was drug related in 2015
+2.2 % of all deaths in average in the us was drug related in 2016
+2.45 % of all deaths in average in the us was drug related in 2017
 
 
 ```{r table_of_od}
