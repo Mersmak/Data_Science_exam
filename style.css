@@ -14,6 +14,7 @@
   color:white;
   margin-top:50%;
   margin-bottom:50%;
+  text-shadow: 2px 2px 10px #000;
 }
   
 
@@ -24,23 +25,29 @@
 /*Intro div */
 #intro_div {
     background-image:url("masher.jpg");
+    background-size: cover;
 }
 
 #intro_div h1 {
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 #intro_div h2 {
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 
 #intro_div p {
   color:white;
-  margin-top:35px;
+  margin-top:18px;
+  text-shadow: 2px 2px 10px #000;
 }
+
+
 
 
 
@@ -50,28 +57,40 @@
 
 /*Total div */
 #total_div {
-  background-image:url("backlit.jpg");
+  background-image:url("street.jpg");
+  text-align:center;
 } 
 
 #total_div h1 {
   color:white;
+  text-shadow: 2px 2px 10px #000;
+  margin-top:35px;
+  margin-bottom:35px;
 }
 
 #total_div h2 {
   color:white;
+  text-shadow: 2px 2px 10px #000;
+  margin-top:35px;
+  margin-bottom:35px;
 }
 
 #total_div p {
   color:white;
+  text-shadow: 2px 2px 10px #000;
   
 }
 
 
 #total_div img{
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 
+
+#int_map img {
+  opacity: 1;
+}
 
 
 
@@ -80,7 +99,7 @@
 /*Rank div */
 
 #rank_div{
-  background-image:url("smoke2.jpg");
+  background-image:url("backlit.jpg");
   text-align:center;
   filter: grayscale(100%); 
 }
@@ -89,27 +108,26 @@
 #rank_div h1{
   color:white;
   margin-bottom: 50px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 
 #rank_div table{
   color:white;
+  text-shadow: 2px 2px 10px #000;
 }
 
 table{
   margin: auto;
   width: 75%;
   color:white;
+  text-shadow: 2px 2px 10px #000;
 }
 
 
 br {
   margin-top:35px;
 }
-
-
-
-
 
 
 
@@ -124,17 +142,22 @@ br {
 #info_div h1{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
+  margin-bottom:35px;
 }
 
 #info_div h2{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
+  margin-bottom:35px;
 }
 
 
 #info_div p{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 
@@ -142,14 +165,20 @@ table.kable_wrapper {
   margin: auto;
   width: 100%;
   color:white;
+  text-shadow: 2px 2px 10px #000;
+  margin-bottom:35px;
 }
 
+#info_div img{
+  opacity: 0.7;
+  margin-bottom:35px;
+}
 
 
 /*Map div */
 
 #map_div{
-  background: #000;
+  background-image:url("snort.jpg");
   text-align:center;
 }
 
@@ -157,22 +186,23 @@ table.kable_wrapper {
 #map_div h1{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 #map_div h2{
   color:white;
   margin-top:35px;
+  margin-bottom:35px;
+  text-shadow: 2px 2px 10px #000;
+  font-size:45px;
 }
 
 
 #map_div p{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
-
-
-
-
 
 
 
@@ -180,27 +210,71 @@ table.kable_wrapper {
 
 /*Corrline div*/
 #corrline_div {
-  background-image:url("snort.jpg");
+  background-image:url("crosswalk.jpg");
+  text-align:center;
+  background-size: cover;
 }
 
 
 #corrline_div h1{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 #corrline_div h2{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 
 #corrline_div p{
   color:white;
   margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
 }
 
 #corrline_div img{
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
+
+
+/*Graphs div*/
+#graphs_div {
+  background-image:url("alley.jpg");
+  background-size: cover;
+  text-align:center;
+}
+
+#graphs_div h1{
+  color:white;
+  margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
+  font-size:45px;
+}
+
+#graphs_div h2{
+  color:white;
+  margin-top:35px;
+  margin-bottom:35px;
+  text-shadow: 2px 2px 10px #000;
+  
+}
+
+
+#graphs_div p{
+  color:white;
+  margin-top:35px;
+  text-shadow: 2px 2px 10px #000;
+}
+
+
+#graphs_div img{
+  opacity: 0.7;
+}
+
+#graphs_div pre{
+  opacity: 0.7;
+}
