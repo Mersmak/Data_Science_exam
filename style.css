@@ -1,74 +1,145 @@
 
-    
-    
 
 
+/*Top div */
 
-/* Flyer-Background Jumbotron */
-.jumbotron {
-    padding: 20% 100% 20% 100%;
-    background-image:url("jumbo.jpg");
-    background-size: cover;
-    
+#top_div {
+  background-image:url("smoke.jpg");
+  background-size: cover;
+  
 }
 
-.jumbotron h1 {
-    color: white;
+#top_div h1{
+  text-align:center;
+  color:white;
+  margin-top:50%;
+  margin-bottom:50%;
+}
+  
+
+
+
+
+
+/*Intro div */
+#intro_div {
+    background-image:url("masher.jpg");
+}
+
+#intro_div h1 {
+  color:white;
+  margin-top:35px;
+}
+
+#intro_div h2 {
+  color:white;
+  margin-top:35px;
+}
+
+
+#intro_div p {
+  color:white;
+  margin-top:35px;
 }
 
 
 
 
 
-/* Introduction */
-#introduction{
-    margin-top:25%;
-}
-.container h2{
-    font-size: 60px;
+
+/*Total div */
+#total_div {
+  background-image:url("pills.jpg");
 } 
 
-
-
-
-
-/* Numbers */
-
-#numbers{
-    margin-top: 20%
+#total_div h1 {
+  color:white;
 }
 
-#numbers_container{
-    
+#total_div h2 {
+  color:white;
 }
 
-
-
-
-
-
-
-
-/* Maps */
-#maps{
-    margin-top:20%;
+#total_div p {
+  color:white;
+  
 }
 
 
 
 
 
-/* Statbox */
 
-#stat{
-    margin-top:20%;
+
+/*Rank div */
+
+#rank_div{
+  background-image:url("smoke2.jpg");
+  text-align:center;
+  filter: grayscale(100%); 
 }
 
-#stat_container{
-    
-    padding-top:5%;
-    background-color: rgba(170, 185, 185, 0.3);
-    
+
+#rank_div h1{
+  color:white;
+  margin-bottom: 50px;
 }
 
-    
+
+#rank_div table{
+  color:white;
+}
+
+table{
+  margin: auto;
+  width: 75%;
+}
+
+
+
+
+
+
+
+
+
+/*Info div */
+#info_div{
+  background-image:url("rain.jpg");
+  text-align:center;
+}
+
+#info_div h1{
+  color:white;
+  margin-top:35px;
+}
+
+#info_div h2{
+  color:white;
+  margin-top:35px;
+}
+
+
+#info_div p{
+  color:white;
+  margin-top:35px;
+}
+
+
+table.kable_wrapper{
+  margin: auto;
+  width: 75%;
+}
+
+
+
+
+/*Map div */
+
+#map_div{
+  background: #000;
+}
+
+
+
+
