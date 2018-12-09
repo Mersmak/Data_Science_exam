@@ -47,9 +47,10 @@
 
 
 
+
 /*Total div */
 #total_div {
-  background-image:url("pills.jpg");
+  background-image:url("backlit.jpg");
 } 
 
 #total_div h1 {
@@ -63,6 +64,11 @@
 #total_div p {
   color:white;
   
+}
+
+
+#total_div img{
+  opacity: 0.6;
 }
 
 
@@ -93,6 +99,12 @@
 table{
   margin: auto;
   width: 75%;
+  color:white;
+}
+
+
+br {
+  margin-top:35px;
 }
 
 
@@ -126,11 +138,11 @@ table{
 }
 
 
-table.kable_wrapper{
+table.kable_wrapper {
   margin: auto;
-  width: 75%;
+  width: 100%;
+  color:white;
 }
-
 
 
 
@@ -138,8 +150,57 @@ table.kable_wrapper{
 
 #map_div{
   background: #000;
+  text-align:center;
+}
+
+
+#map_div h1{
+  color:white;
+  margin-top:35px;
+}
+
+#map_div h2{
+  color:white;
+  margin-top:35px;
+}
+
+
+#map_div p{
+  color:white;
+  margin-top:35px;
 }
 
 
 
+
+
+
+
+
+
+/*Corrline div*/
+#corrline_div {
+  background-image:url("snort.jpg");
+}
+
+
+#corrline_div h1{
+  color:white;
+  margin-top:35px;
+}
+
+#corrline_div h2{
+  color:white;
+  margin-top:35px;
+}
+
+
+#corrline_div p{
+  color:white;
+  margin-top:35px;
+}
+
+#corrline_div img{
+  opacity: 0.6;
+}
 
