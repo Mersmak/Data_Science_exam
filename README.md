@@ -196,41 +196,52 @@ Writing Quality: Clarity of writing, organization, and grammar.
 This project contains multiple sources of data and datasets:
 
 #VSRR Provisional Drug Overdose Death Counts
+
 The main source of data is contained in this dataset. It contains provisional counts for drug overdose deaths based on a current flow of mortality data in the National Vital Statistics System. National provisional counts include deaths occurring within the 50 states and the District of Columbia as of the date specified and may not include all deaths that occurred during a given time period. Provisional counts are often incomplete and causes of death may be pending investigation resulting in an underestimate relative to final counts.
 
-#State population 2015 - Infoplease
+-State population 2015 - Infoplease
+
 In this dataset we import the total population of each state in the United States for year 2015. Infoplease uses the U.S. Census Bureau, Population Division as a source for their numbers.
 
-#State population 2016 - Dilemma X
+-State population 2016 - Dilemma X
+
 In this dataset we import the total population of each state in the United States for year 2016. Dilemma X uses the U.S. Census Bureau, Population Division as a source for their numbers.
 
-#State population 2017 - Wikipedia
+-State population 2017 - Wikipedia
+
 In this dataset we import the total population of each state in the United States for year 2017. Wikipedia uses the U.S. Census Bureau, Population Division as a source for their numbers.
 
-#State population 2018 - World Population Review
+-State population 2018 - World Population Review
+
 In this dataset we import the total population of each state in the United States for year 2017. World Population Review uses the U.S. Census Bureau, Population Division as a source for their numbers.
 
-#Local Area Unemployment Statistics
+-Local Area Unemployment Statistics
+
 We import the datasets for the different years from the U.S. Department of Labor.
 They contain the annual averages of unemployment rates for the States.
 
-#Average Annual Sunshine by State
+-Average Annual Sunshine by State
+
 This dataset shows the average amount of sunshine that each US state has.
 Current Results uses the National Climatic Data Center and World Data Center for Meteorology  as a source for their numbers.
 
-#Average Annual Temperature for Each US State
+-Average Annual Temperature for Each US State
+
 This dataset shows the average temperature that each US state has.
 The temperatures collected by Current Results are based on data collected by weather stations throughout each state during the years 1971 to 2000 and made available by the NOAA National Climatic Data Center of the United States.
 
-#Average Annual Precipitation by State
+-Average Annual Precipitation by State
+
 This dataset shows the average precipitation that each US state has.
 The precipitation averages are based on data collected by weather stations throughout each state from 1971 to 2000 and provided by the NOAA National Climatic Data Center.
 
-#Median Household income
+-Median Household income
+
 The dataset contains the median household income of all the states in the United States.
 The incomes collected by Data USA are based on data from the Census Bureau
 
-#List of Latitudes and Longitudes for Every State
+-List of Latitudes and Longitudes for Every State
+
 The dataset from Ink Plant contains the latitudes and longitudes for every state in the United States
 
 
