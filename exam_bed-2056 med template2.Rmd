@@ -1775,7 +1775,7 @@ summary(fit)
 
 ```
 
-<p>as we can se </p>
+<p>R2 measures goodnes of fit for our model. As we can see only 14,5% of the varianse of the dependent variable is explained by the variens of the independent variables. This implefies that we have a lot of error in the model explaining why our independent variables only explains 14,5 % of the varianse in overdose ratio. This means there is no directe and distingtive correlation between the overdose ratio and income, weather and unemployment. If we try to run the model with less independent variables the varianse is explained even less.</p>
 </div>
 
 
