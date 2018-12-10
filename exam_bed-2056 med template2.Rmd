@@ -883,7 +883,12 @@ The main source of data is contained in this dataset. It contains provisional co
 
 <h2>Summary of study </h2>
 
-<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. </p>
+<p>
+In this study we have examined the deaths by drugs for the United States Of America. Usually drug data statistics and presentation focuses on grouping by age, but not this study. We wanted to study the geographicaly variation and explore the data for each individual state in the US. The data range from 2015-2018 with the 2015 and 2016 as most reliable, as the to last years contain incomplete data due to juristic factors. Nevertheless, the discoveries we made were very interesting. By scaling the overdoses by the respectiv population data for each state, we could se how many people died by drugs scaled equaly. District of Columbia, West Virginia and Ohio were the states with highest overdose rate in the total of US. The overdose rate in DC and Ohio has almost doubled from 2015 to 2017. Take a look at the bar plots divided into regions to see the overall development per state from 2015-2017. Ioa, South Dakota, and Nebraska is the states with lowest registered drug deaths. </p>
+<p>
+We have compared the overdose rate by the states with highest and lowest, income, temperatures and unemployment. We found some correlation but not as strong as expected. This implicates that the reasons for overdosing on drugs is explained by many factors and is a complicated issue. This assumption was backed by our linear regression model that only achieved an R2 value of 14.5 percent, meaning there is a lot of error explaining the outcome of number of death by drugs. The key numbers for each state is visualised in the interactive map below. The most used drugs is opioids, syntetic opioids and heroin. 2.45 % of all deaths in average in the US was drug related in 2017. The total average drug deaths per state for 2015 is 11 585 and worse, it increased to 15 856 in 2017. This is an increase of 36.9% from 2015 to 2017, implefying that it is a big problem for all the states in the US. </p>
+<p>
+Overall this has been an fun an educational experience we are glad to have been trough. Enjoy our work! </p>
 
 
 </div>
@@ -1110,7 +1115,7 @@ geom_bar(stat="identity", width=.7, position = "dodge") +
          axis.text = element_text(colour = "white"),
          plot.title = element_text(color="white"),
          axis.title.x = element_text(color="white"),
-         axis.title.y = element_text(color="white")
+         axis.title.y = element_text(color="white"),
          ) 
 
 
@@ -1463,7 +1468,8 @@ knitr::kable(list(odcomplow, inchigh,ploylow), format = "html")
 knitr::kable(list(weathergood, weatherbad))
 ```
 <p>
-blablabla
+New Hampshire is the only state that is represented in the top ten list for bad weather as well as the list for most overdoses. 
+texas and missisipi is similar the only states that are represented in the top ten list for good weather and the list for least overdoses. It makes sence that the correlation between weather and overdoses are not stronly correlated.
 </p>
 
 
@@ -1830,6 +1836,11 @@ leaflet(statesmap) %>% addProviderTiles(providers$CartoDB.DarkMatter) %>%
 ```
 <p>As the heatmap showes, most of the overdoses is in the east of the US. This is most likely because there is more states and people living in this part of the country compared to the rest of the country.</p>
 
+<p> The graphic displayed above is a heat map that represents the data as colors by their value. The "warmer" the colors are, the higher the value of the data is on that area of the map. Our observation is that the east coast of the United States has the most death counts related to overdoses. </p>
+
+
+<h2>Final words</h2> 
+<p>We hope the US get the oppurtunity to reverse this tragic trend in the future. The data is intemanating, and as stated in the introduction, to many americans dies to early, and it is truly a big public problem. Thank you for reading. </p>
 
 
 

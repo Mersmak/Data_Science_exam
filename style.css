@@ -24,7 +24,7 @@
 
 /*Intro div */
 #intro_div {
-    background-image:url("masher.jpg");
+    background-image:url("shot.jpg");
     background-size: cover;
 }
 
@@ -178,7 +178,13 @@ table.kable_wrapper {
 /*Map div */
 
 #map_div{
-  background-image:url("snort.jpg");
+  background:
+  linear-gradient(
+      rgba(0, 0, 0, 0.45), 
+      rgba(0, 0, 0, 0.45)
+    ),
+   url("snort.jpg");
+    
   text-align:center;
 }
 
@@ -210,7 +216,13 @@ table.kable_wrapper {
 
 /*Corrline div*/
 #corrline_div {
-  background-image:url("crosswalk.jpg");
+  background:
+  linear-gradient(
+      rgba(0, 0, 0, 0.45), 
+      rgba(0, 0, 0, 0.45)
+    ),
+   url("crosswalk.jpg");
+  
   text-align:center;
   background-size: cover;
 }
