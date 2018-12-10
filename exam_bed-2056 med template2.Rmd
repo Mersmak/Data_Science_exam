@@ -24,6 +24,10 @@ library(pacman)
 p_load(tidyverse, leaflet, dplyr, readr, reshape2,viridis,
        jsonlite, rvest, magrittr, htmltab, knitr, leaflet.extras)
 
+# All the data are in the data_import chunks. Remember to run everything top - down, and install all packages prior to running the code. All the data is downloaded from the web, so make sure you have internett connection, working with this rmd file. 
+# for questions about running the data, please contact oerjan.myrland@gmail.com 
+
+
 # Data on Drug accidents in the US 2015-2018
 drug_set <- read_csv("https://data.cdc.gov/api/views/xkb8-kh2a/rows.csv?accessType=DOWNLOAD")
 
