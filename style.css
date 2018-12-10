@@ -239,6 +239,16 @@ table.kable_wrapper {
   opacity: 0.7;
 }
 
+#corrline_div pre{
+  opacity: 0.7;
+  color:white;
+}
+
+pre:not([class]) {
+    background-color: black;
+}
+
+
 
 
 /*Graphs div*/
@@ -275,6 +285,3 @@ table.kable_wrapper {
   opacity: 0.7;
 }
 
-#graphs_div pre{
-  opacity: 0.7;
-}
