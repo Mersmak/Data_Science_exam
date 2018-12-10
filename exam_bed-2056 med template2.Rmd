@@ -1456,16 +1456,16 @@ The correlation between overdoses and population was `r round(cor(comparedata$Dr
 #Monthly average overdose deaths for every year and for all drugs in the dataset
 
 #All type of drug deaths in 2015
-NODOD_2015 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015')
+NODOD_2015 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2015') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NODOD_2015 <- NODOD_2015[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2016
-NODOD_2016 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2016')
+NODOD_2016 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2016') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NODOD_2016 <- NODOD_2016[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2017
-NODOD_2017 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2017')
+NODOD_2017 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2017') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NODOD_2017 <- NODOD_2017[1:636,] # REMOVING DUPLICATES
 #All type of drug deaths in 2018
-NODOD_2018 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2018')
+NODOD_2018 <-  drug_set %>% filter(Indicator =='Number of Drug Overdose Deaths') %>% filter(Year =='2018') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NODOD_2018 <- NODOD_2018[1:212,] # REMOVING DUPLICATES
 
 
@@ -1526,28 +1526,19 @@ avg_monthly_2017 <- workaround(avg_monthly_2017,avg_monthly_2017.CSV)
 avg_monthly_2018 <- workaround(avg_monthly_2018,avg_monthly_2018.CSV)
 
 #Making a plot that contains all the years
-ggplot() +
-    geom_line(data = avg_monthly_2015, aes(x = Month, y =Deaths,group = 1), colour = "red" ) +   #2015
-    geom_line(data = avg_monthly_2016, aes(x = Month, y =Deaths,group = 1), colour = "blue") +    #2016
-  geom_line(data = avg_monthly_2017, aes(x = Month, y =Deaths,group = 1), colour = "Orange") +  #2017
-    geom_line(data = avg_monthly_2018, aes(x = Month, y =Deaths,group = 1), colour = "green") +  #2018
+ggplot() + 
+    geom_line(data = avg_monthly_2015, aes(x = Month, y =Deaths,group = 1 , colour = "2015" )) +   #2015
+    geom_line(data = avg_monthly_2016, aes(x = Month, y =Deaths,group = 1 , colour = "2016")) +    #2016
+    geom_line(data = avg_monthly_2017, aes(x = Month, y =Deaths,group = 1, colour = "2017")) +  #2017
+    geom_line(data = avg_monthly_2018, aes(x = Month, y =Deaths,group = 1, colour = "2018")) +  #2018
     xlab("Month") + ylab("Deaths")  +
   scale_x_continuous(breaks = avg_monthly_2015$Month) +
-  guides(fill=TRUE)+
-  #labs(
-        #title = "Average amount of drug overdoses per month 2015-2018")+
-        #x = "State",
-       # y = "Deaths")
-  theme_classic()
+  theme_classic() + 
+  scale_colour_manual(name="Year",values=c("2015"="purple", "2016"="blue", "2017"="grey", "2018" = "cyan"))
 
 ```
 
-<p>
-The years are displayed with the following colors:</p>
-<p>-2015 is Red</p>
-<p>-2016 is Blue</p>
-<p>-2017 is Orange</p>
-<p>-2018 is Green</p>
+
 <p>
 Our observation is that there is presumably a linear increase in the average amount of deaths related to overdoses from month to month, and year to year from 2015 to 2018. The downcrease in 2018 is probably due to incomplete data.</p>
 
@@ -1563,16 +1554,16 @@ mean_overdoses <- c(mean(avg_monthly_2015$Deaths),mean(avg_monthly_2016$Deaths),
 
 
 #All types of deaths in 2015
-NOD_2015 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2015')
+NOD_2015 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2015') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NOD_2015 <- NOD_2015[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2016
-NOD_2016 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2016')
+NOD_2016 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2016') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NOD_2016 <- NOD_2016[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2017
-NOD_2017 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2017')
+NOD_2017 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2017') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NOD_2017 <- NOD_2017[1:636,] # REMOVING DUPLICATES
 #All types of deaths in 2018
-NOD_2018 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2018')
+NOD_2018 <-  drug_set %>% filter(Indicator =='Number of Deaths') %>% filter(Year =='2018') %>% filter(State_name != 'United States of America federal state') %>% filter(State_name != 'Yucatan(MEX)')
 NOD_2018 <- NOD_2018[1:212,] # REMOVING DUPLICATES
 
 #Average deaths by month for 2015
@@ -1595,17 +1586,18 @@ mean_overdoses <- data.frame(years,mean_overdoses)
 mean_deaths <- data.frame(years,mean_deaths)
 
 
+#making a plot
+
+ggplot() +
+    geom_line(data = mean_overdoses, aes(x = years, y =mean_overdoses, group = 1), colour = "red" ) +  xlab("Year") + ylab("Average deaths") 
 
 
 ggplot() +
-    geom_line(data = mean_overdoses, aes(x = years, y =mean_overdoses, group = 1), colour = "red" ) +  xlab("Year") + ylab("Deaths") + theme_classic()
-
-ggplot() +
-    geom_line(data = mean_deaths, aes(x = years, y =mean_deaths, group = 1), colour = "blue" ) +  xlab("Year") + ylab("Deaths") +
+    geom_line(data = mean_deaths, aes(x = years, y =mean_deaths, group = 1), colour = "blue" ) +  xlab("Year") + ylab("Average deaths") +
   theme_classic()
 
-#Doing a correlation test
-cortest <- cor.test(mean_overdoses$mean_overdoses,mean_deaths$mean_deaths)
+
+cor_test_a <- cor.test(mean_overdoses$mean_overdoses,mean_deaths$mean_deaths)
 
 
 ```
@@ -1670,10 +1662,10 @@ Alldata <- Alldata[,-c(31,34,37)]
 row.names(Alldata) <- NULL
 
 ```
-</div>
 
 
-<div class="jumbotron jumbotron-fluid" id="map_div">
+
+
 <h2> What will a linear regression model say about overdoses dependent on income, weather and unemployment? </h2>
 ```{r linear_regression}
 
@@ -1685,11 +1677,11 @@ summary(fit)
 ```
 
 <p>as we can se </p>
+</div>
 
 
 
-
-
+<div class="jumbotron jumbotron-fluid" id="map_div">
 <h2> Heatmap of drug ratio US </h2>
 ```{r Heatma, fig.width= 8}
 # must add new variable to data statesmap and then remove the states colum. Using the leaflet and leaflet.extra package we can plot a heatmap of the us. 
