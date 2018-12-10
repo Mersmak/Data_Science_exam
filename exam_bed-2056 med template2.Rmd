@@ -1036,7 +1036,7 @@ popupgo <- paste(stat$stat, nr1$nr1, verdi1$verdi1, nr2$nr2, verdi2$verdi2, nr3$
 
 
 
-<h1> Interactive map with summary of every state </h1>
+<h2> Interactive map with summary of every state </h2>
 <div id="int_map">
 ```{r Map, echo = FALSE, message= FALSE, fig.width=8}
 # The map is interactive, so feel free to zoom in and read about the specific states clicking the popup icon. 
@@ -1389,9 +1389,7 @@ row.names(weatherbad) <- NULL
 
 ```
 
-<h2> Will low income and high unemployment result in a higher overdose rate? </h2>
-
-<h2> 2016 numbers </h2>
+<h2> Will low income and high unemployment result in a higher overdose rate (2016)? </h2>
 
 <p>Our assumption is that low income and high unemployment equals to high overdose rate. So we take a look at the top 10 states of high overdose rate, lowest income and highest unemployment. 
 </p>
