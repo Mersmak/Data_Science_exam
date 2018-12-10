@@ -1195,7 +1195,7 @@ geom_bar(stat="identity", width=.7, position = "dodge") +
 
 
 <h2> Deaths by drugs for all states compared to one another in 2016: </h2>
-```{r}
+```{r fig.width= 8, fig.height=8}
 ggplot() +
   geom_bar(stat = "identity", data = odcomp, aes (x = State, y = OD16_Deathspr10000, fill = State)) +
   coord_flip()+
@@ -1397,8 +1397,8 @@ row.names(weatherbad) <- NULL
 </p>
 
 
-<h2> Scatter plot for median income </h2>
-```{r Graph_median_income, fig.width= 8}
+<h2> Scatter plot for median household income </h2>
+```{r Graph_median_income, fig.width= 8, fig.height=8}
 
 #Scatter plot for median income
 income1.1 <- income
@@ -1765,7 +1765,7 @@ row.names(Alldata) <- NULL
 
 
 
-<h2> What will a linear regression model say about overdoses dependent on income, weather and unemployment? </h2>
+<h2>What will a linear regression model say about overdoses as dependent variable with income, weather and unemployment as independent variables?</h2>
 ```{r linear_regression}
 
 fit <- lm(OD16_relation~Median_income16+PrecipitationMM+Clear_days+Rate2016, data = comparedata)
